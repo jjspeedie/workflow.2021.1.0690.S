@@ -20,23 +20,43 @@ mask_dict['SO']   = {'r_max': 3.0,          # Maximum radius in [arcsec] of the 
                      'target_res': 0.5      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
                      }
 
-# The following is for estimating noise, using with make_mask_of_linefree_channels() from keplerian_mask, which is a hack by Jess:
-mask_dict['SO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                  'v_min': 3000.,        # Maximum velocity in [m/s] of the mask.
-                                  'v_max': 8000.,        # Maximum velocity in [m/s] of the mask.
-                                  }
-mask_dict['C18O_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                    'v_min': 2000.,        # Maximum velocity in [m/s] of the mask.
-                                    'v_max': 9000.,        # Maximum velocity in [m/s] of the mask.
-                                    }
-mask_dict['13CO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                    'v_min': 1500.,        # Maximum velocity in [m/s] of the mask.
-                                    'v_max': 10000.,        # Maximum velocity in [m/s] of the mask.
-                                    }
-mask_dict['12CO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                    'v_min': -500.,        # Maximum velocity in [m/s] of the mask.
-                                    'v_max': 12000.,        # Maximum velocity in [m/s] of the mask.
-                                    }
+# The following is for  kickstarting auto-multithresh to help it capture diffuse emission using make_mask_for_diffuse_emission() from keplerian_mask, which is a hack by Jess:
+# mask_dict['SO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                       'v_min': 3000.,        # Maximum velocity in [m/s] of the mask.
+#                                       'v_max': 8000.,        # Maximum velocity in [m/s] of the mask.
+#                                       }
+# mask_dict['C18O_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                         'v_min': 2000.,        # Maximum velocity in [m/s] of the mask.
+#                                         'v_max': 9000.,        # Maximum velocity in [m/s] of the mask.
+#                                         }
+mask_dict['13CO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+                                        'v_min': 4926.,        # Maximum velocity in [m/s] of the mask.
+                                        'v_max': 6900.,        # Maximum velocity in [m/s] of the mask.
+                                        }
+mask_dict['12CO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+                                        'v_min': -4212.,        # Maximum velocity in [m/s] of the mask.
+                                        'v_max': 7362.,        # Maximum velocity in [m/s] of the mask.
+                                        }
+
+
+
+# # The following is for estimating noise, using with make_mask_of_linefree_channels() from keplerian_mask, which is a hack by Jess:
+# mask_dict['SO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                   'v_min': 3000.,        # Maximum velocity in [m/s] of the mask.
+#                                   'v_max': 8000.,        # Maximum velocity in [m/s] of the mask.
+#                                   }
+# mask_dict['C18O_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                     'v_min': 2000.,        # Maximum velocity in [m/s] of the mask.
+#                                     'v_max': 9000.,        # Maximum velocity in [m/s] of the mask.
+#                                     }
+# mask_dict['13CO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                     'v_min': 1500.,        # Maximum velocity in [m/s] of the mask.
+#                                     'v_max': 10000.,        # Maximum velocity in [m/s] of the mask.
+#                                     }
+# mask_dict['12CO_estimate_rms']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+#                                     'v_min': -500.,        # Maximum velocity in [m/s] of the mask.
+#                                     'v_max': 12000.,        # Maximum velocity in [m/s] of the mask.
+#                                     }
 
 
 # Keplerian mask not used for the following molecules:

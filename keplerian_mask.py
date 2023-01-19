@@ -394,13 +394,25 @@ def _save_as_mask(image, tolerance=0.01):
 #     ctk.makemask(mode='copy', inpimage=image, inpmask='{}:mask0'.format(image),
 #              output=image+'.mask_for_estimating_rms.image', overwrite=True)
 
-def _save_as_image_for_estimating_noise(image, mask, overwrite=True):
-    """Identical to _save_as_image, but with an added suffix for the mask name.
+# def _save_as_image_for_estimating_noise(image, mask, overwrite=True):
+#     """Identical to _save_as_image, but with an added suffix for the mask name.
+#     Save as an image by copying the header info from 'image'."""
+#     ia.open(image)
+#     coord_sys = ia.coordsys().torecord()
+#     ia.close()
+#     outfile = _trim_name(image).replace('.image', '.mask_for_estimating_rms.image')
+#     if overwrite:
+#         ctk.rmtables(outfile)
+#     ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
+#     ia.close()
+
+def _save_as_image_for_diffuse_emission(image, mask, overwrite=True):
+    """Identical to _save_as_image, but with a different suffix for the mask name.
     Save as an image by copying the header info from 'image'."""
     ia.open(image)
     coord_sys = ia.coordsys().torecord()
     ia.close()
-    outfile = _trim_name(image).replace('.image', '.mask_for_estimating_rms.image')
+    outfile = _trim_name(image).replace('.image', '.initial_mask_for_diffuse_emission.image')
     if overwrite:
         ctk.rmtables(outfile)
     ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
@@ -506,11 +518,11 @@ def make_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=0.0,
 
 
 
-def make_mask_of_linefree_channels(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0,
+def make_mask_for_diffuse_emission(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0,
               zr=0.0, z_func=None, r_min=0.0, r_max=4.0, tolerance=0.01, restfreqs=None, estimate_rms=True,
               export_FITS=False, cont_image=None, v_min=5000., v_max=6000.):
     """
-    Make a mask for estimating rms noise in line-free channels.
+    Make a mask for kickstarting auto-multithresh to help it capture diffuse emission [previously: estimating rms noise in line-free channels.]
     The mask covers a (projected) circular area with radius defined by r_max.
     Intended usage is for r_max to extend basically to cover the whole FOV.
     The mask spans the spectral axis within the channels defined by v_min and v_max.
@@ -585,9 +597,10 @@ def make_mask_of_linefree_channels(image, inc, PA, dist, mstar, vlsr, dx0=0.0, d
             mask = np.where(np.logical_or(mask, tmp_mask), 1.0, 0.0)
 
     # Save it as a mask.
-    _save_as_image_for_estimating_noise(image, mask) # creates image+'.mask_for_estimating_rms.image'
-    _save_as_mask(image.replace('.image', '.mask_for_estimating_rms.image'), tolerance)
-    mask = image.replace('.image', '.mask_for_estimating_rms.image')
+    # _save_as_image_for_estimating_noise(image, mask) # creates image+'.mask_for_estimating_rms.image'
+    _save_as_image_for_diffuse_emission(image, mask) # creates image+'.initial_mask_for_diffuse_emission.image'
+    _save_as_mask(image.replace('.image', '.initial_mask_for_diffuse_emission.image'), tolerance)
+    mask = image.replace('.image', '.initial_mask_for_diffuse_emission.image')
 
     # Export as a FITS file if requested.
     if export_FITS:

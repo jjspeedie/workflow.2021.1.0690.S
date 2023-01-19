@@ -37,7 +37,7 @@ from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_mask as make_keplerian_mask
 from keplerian_mask import make_mask_of_linefree_channels
 # from calc_uvtaper import calc_taper
-# from shutil import copytree
+from shutil import copytree
 # from shutil import rmtree
 
 """Guidelines for optimizing auto-multithresh parameters:
@@ -46,16 +46,16 @@ type the following on the casa command line:"""
 os.environ['SAVE_ALL_AUTOMASKS']="true"
 
 
-def tclean_wrapper_continuum(vis,
-                            imagename,
-                            line,
-                            imsize=None,
-                            cellsize=None,
-                            robust=0.5,
-                            vres_version='v1',
-                            uvtaper=[]):
+def tclean_wrapper_line(vis,
+                        imagename,
+                        line,
+                        imsize=None,
+                        cellsize=None,
+                        robust=0.5,
+                        vres_version='v2',
+                        uvtaper=[]):
     """
-    Master tclean wrapper function to image all lines.
+    Master tclean wrapper function to image a line.
 
     Breakdown of the procedure:
         - Make a dirty image cube
@@ -98,61 +98,45 @@ def tclean_wrapper_continuum(vis,
     linefreq    = dlines.line_dict[line]['freq']
     print('linefreq = ', linefreq)
 
-    # casatasks.tclean(vis                    = vis,              # msfile to image
-    #                  imagename              = imagename,        # file names preceding .image, .residual, etc.
-    #                  specmode               = 'cube',
-    #                  restfreq               = linefreq,
-    #                  start                  = start,
-    #                  width                  = width,
-    #                  nchan                  = nchan,
-    #                  outframe               = 'lsrk',
-    #                  veltype                = 'radio',
-    #                  deconvolver            = 'multiscale',
-    #                  scales                 = scales,
-    #                  weighting              = 'briggsbwtaper',  # Ryan's suggestion over 'briggs' (used by MAPS)
-    #                  robust                 = robust,
-    #                  imsize                 = imsize,
-    #                  cell                   = cell,
-    #                  spw                    = '',
-    #                  niter                  = 0,                # to make a dirty image
-    #                  interactive            = False,
-    #                  perchanweightdensity   = True,             # Ryan's suggestion over False (used by MAPS)
-    #                  restoringbeam          = 'common',
-    #                  cycleniter             = 300,
-    #                  cyclefactor            = 1,
-    #                  uvtaper                = uvtaper,
-    #                  savemodel              = 'none'
-    #                  )
-    #
-    # print("Exporting dirty image products of the "+line+" line to FITS...")
-    # for ext in tclean_sv_dirty_extensions:
-    #     exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
+    casatasks.tclean(vis                    = vis,              # msfile to image
+                     imagename              = imagename,        # file names preceding .image, .residual, etc.
+                     specmode               = 'cube',
+                     restfreq               = linefreq,
+                     start                  = start,
+                     width                  = width,
+                     nchan                  = nchan,
+                     outframe               = 'lsrk',
+                     veltype                = 'radio',
+                     deconvolver            = 'multiscale',
+                     scales                 = scales,
+                     weighting              = 'briggsbwtaper',  # Ryan's suggestion over 'briggs' (used by MAPS)
+                     robust                 = robust,
+                     imsize                 = imsize,
+                     cell                   = cell,
+                     spw                    = '',
+                     niter                  = 0,                # to make a dirty image
+                     interactive            = False,
+                     perchanweightdensity   = True,             # Ryan's suggestion over False (used by MAPS)
+                     restoringbeam          = 'common',
+                     cycleniter             = 300,
+                     cyclefactor            = 1,
+                     uvtaper                = uvtaper,
+                     savemodel              = 'none'
+                     )
+
+    print("Exporting dirty image products of the "+line+" line to FITS...")
+    for ext in tclean_sv_dirty_extensions:
+        exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
     for ext in tclean_rm_dirty_extensions:
         print('(Space saving) Deleting this dirty file: ', imagename+ext)
         os.system('rm -rf '+ imagename+ext)
 
-    print("Dirty image complete, estimating rms noise in line-free channels...")
-    mask_for_estimating_rms = imagename+'.mask_for_estimating_rms.image'
-    if os.path.isfile(mask_for_estimating_rms):
-        print('--> mask_for_estimating_rms.image already exists, and we will use it now...')
-        rms = casatasks.imstat(imagename=imagename+'.image', mask='"{}" < 1.0'.format(mask_for_estimating_rms))['rms'][0]
-    else:
-        print('--> mask_for_estimating_rms.image does not exist yet; we are making it now...')
-        rms = make_mask_of_linefree_channels(image           = imagename+'.image',
-                                             inc             = ddisk.disk_dict['incl'],
-                                             PA              = ddisk.disk_dict['PA_gofish'],
-                                             mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-                                             dist            = ddisk.disk_dict['distance'],
-                                             vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-                                             v_min           = dmask.mask_dict[line+'_estimate_rms']['v_min'], # in m/s
-                                             v_max           = dmask.mask_dict[line+'_estimate_rms']['v_max'], # in m/s
-                                             r_max           = dmask.mask_dict[line+'_estimate_rms']['r_max'], # in arcsec
-                                             restfreqs       = linefreq,
-                                             export_FITS     = True,
-                                             estimate_rms    = True) # prints and returns rms (Jy/beam) outside mask
 
-    print("Estimated rms noise outside of the masked regions: %.2f mJy/beam"%(rms*1e3))
-    threshold   = "%.8f" %(4.*rms*1e3)+'mJy'
+    print("Dirty image complete, estimating rms noise in the dirty image...")
+    rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0]
+    print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
+    threshold   = "%.8f" %(3.*rms*1e3)+'mJy'
+
 
     # if Keplerian mask for cleaning...
     # if line=='SO': # Make a keplerian_mask
@@ -170,14 +154,85 @@ def tclean_wrapper_continuum(vis,
     # else:
     #     print("Code for 12CO, 13CO, C18O not yet written")
 
+    if ((line=='12CO') | (line=='13CO')):
+        print("The "+line+" line contains diffuse emission at central channels that auto-multithresh struggles to mask. We shall help it...")
+
+        print("Have you already made a mask for kickstarting auto-multithresh with a broad mask?")
+        initial_mask_for_diffuse_emission = imagename+'.initial_mask_for_diffuse_emission.image'
+        if os.path.isfile(initial_mask_for_diffuse_emission):
+            print('--> Yes, initial_mask_for_diffuse_emission.image already exists, and we will use it now...')
+            # rms = casatasks.imstat(imagename=imagename+'.image', mask='"{}" < 1.0'.format(initial_mask_for_diffuse_emission))['rms'][0]
+        else:
+            print('--> No, initial_mask_for_diffuse_emission.image does not exist yet; we are making it now...')
+            make_mask_for_diffuse_emission(image           = imagename+'.image',
+                                           inc             = ddisk.disk_dict['incl'],
+                                           PA              = ddisk.disk_dict['PA_gofish'],
+                                           mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
+                                           dist            = ddisk.disk_dict['distance'],
+                                           vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
+                                           v_min           = dmask.mask_dict[line+'_diffuse_emission']['v_min'], # in m/s
+                                           v_max           = dmask.mask_dict[line+'_diffuse_emission']['v_max'], # in m/s
+                                           r_max           = dmask.mask_dict[line+'_diffuse_emission']['r_max'], # in arcsec
+                                           restfreqs       = linefreq,
+                                           export_FITS     = True, # this could be false
+                                           estimate_rms    = True) # this could be false; prints and returns rms (Jy/beam) outside mask
 
 
     """ Clean down to the cleaning threshold """
     imagename = imagename.replace('.dirty', '.clean')
 
-    for ext in tclean_rm_extensions:
-        print('Deleting previous file: ', imagename+ext)
-        os.system('rm -rf '+ imagename+ext)
+    # for ext in tclean_rm_extensions:
+    #     print('Deleting previous file: ', imagename+ext)
+    #     os.system('rm -rf '+ imagename+ext)
+
+    if ((line=='12CO') | (line=='13CO')):
+        print("Doing initial niter=1 clean to initialize the mask to encompass diffuse emission...")
+        casatasks.tclean(vis                    = vis,              # msfile to image
+                       imagename              = imagename,        # file names preceding .image, .residual, etc.
+                       specmode               = 'cube',
+                       restfreq               = linefreq,
+                       start                  = start,
+                       width                  = width,
+                       nchan                  = nchan,
+                       outframe               = 'lsrk',
+                       veltype                = 'radio',
+                       deconvolver            = 'multiscale',
+                       scales                 = scales,
+                       weighting              = 'briggsbwtaper',  # Ryan's suggestion over 'briggs' (used by MAPS)
+                       robust                 = robust,
+                       imsize                 = imsize,
+                       cell                   = cell,
+                       spw                    = '',
+                       threshold              = threshold,
+                       perchanweightdensity   = True,             # Ryan's suggestion over False (used by MAPS)
+                       restoringbeam          = 'common',
+                       cyclefactor            = 1,
+                       uvtaper                = uvtaper,
+                       savemodel              = 'none',
+
+                       niter                  = 1,            # these two need to be the same, and we only mean to kickstart
+                       cycleniter             = 1,            # these two need to be the same, and we only mean to kickstart
+                       interactive            = False,
+                       mask                   = initial_mask_for_diffuse_emission,
+                       usemask                = 'user')
+
+        if os.path.isfile(imagename+'.autothresh1'):
+            print("Making a copy of .clean.autothresh1 for posterity and deleting original...")
+            copytree(imagename+'.autothresh1', imagename+'.autothresh1_initial_for_diffuse_emission')
+            os.system('rm -rf '+imagename+'.autothresh1')
+
+        restart = True      # to make auto-multi-thresh use the mask we just initiated
+        calcres = False     # to save computational time; no need to recalculate the grid
+        calcpsf = False     # to save computational time; no need to recalculate the PSF
+        # if no changes were made to relevant parameters between
+        #  the runs, set calcres=False, calcpsf=False to resume directly from
+        #  the minor cycle without the (unnecessary) first major cycle.
+
+    else:
+        restart = True      # "re-use existing images"; existing images don't exist so this is fine
+        calcres = True      # we do need to calculate the grid
+        calcpsf = True      # we do need to calculate the PSF
+
 
     print("Starting to clean the "+line+" line down to threshold of "+threshold+"...")
     rec = casatasks.tclean(vis                    = vis,              # msfile to image
@@ -210,9 +265,11 @@ def tclean_wrapper_continuum(vis,
                            # mask                   = imagename.replace('.clean', '.dirty.mask.image',))
 
                            # Use broad initial mask (the one used for noise estimation):
-                           mask                   = mask_for_estimating_rms,
+                           # mask                   = imagename+'.mask',
                            # usemask                = 'user',
-                           restart                = True,
+                           restart                = restart,
+                           calcres                = calcres,
+                           calcpsf                = calcpsf,
 
                            # Automasking Parameters below this line
                            usemask           = 'auto-multithresh',
@@ -291,11 +348,11 @@ def tclean_wrapper_continuum(vis,
 ######################################################
 """
 
-molecules       = ['13CO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
-vres_version    = 'v1' # 14-Jan-2023
+molecules       = ['13CO', '12CO', 'SO', 'C18O']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
+vres_version    = 'v2' # 17-Jan-2023
 
 for line in molecules:
-    for robust in [1.]:
+    for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
@@ -309,12 +366,12 @@ for line in molecules:
             print("###### And Briggs robust weighting: ", robust)
             print("################################################")
 
-            tclean_wrapper_continuum(vis            = vis,
-                                     imagename      = imagename,
-                                     line           = line,
-                                     robust         = robust,
-                                     vres_version   = vres_version
-                                 )
+            tclean_wrapper_line(vis            = vis,
+                                imagename      = imagename,
+                                line           = line,
+                                robust         = robust,
+                                vres_version   = vres_version
+                                )
 
 """
 ######################################################
@@ -340,6 +397,13 @@ DONE - Save the JvM convolved model?
 DONE - Finess/decide on keplerian mask parameters for SO
 DONE - Figure out good masks for 12CO, 13CO, C18O, save them
 CAN'T - Save the .last files for posterity [.LAST FILES AREN'T CREATED WITH MODULAR CASA]
+"""
+
+
+"""
+Spectral extent of diffuse line emission not captured by automultithresh, measured in (shallowly) cleaned robust=1.5 image cubes:
+12CO:
+13CO:
 """
 
 """
