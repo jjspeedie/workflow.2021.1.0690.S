@@ -13,31 +13,30 @@ mask_dict['continuum'] = {'circle mask' : 'circle[[%s, %s], %.1farcsec]' %('04h5
                          }
 
 # The following is for cleaning, using with Rich Teague's keplerian_mask, based on experimentation:
-mask_dict['SO']   = {'r_max': 3.0,          # Maximum radius in [arcsec] of the mask.
-                     'dV0': 400.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
-                     'dVq': -0.5,           # The exponent of the power law describing the Doppler width as a function of radius.
-                     'zr': 0.1,             # For elevated emission, the z/r value.
-                     'target_res': 0.5      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
-                     }
+mask_dict['SO_keplerian']   = {'r_max': 3.0,          # Maximum radius in [arcsec] of the mask.
+                               'dV0': 400.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
+                               'dVq': -0.5,           # The exponent of the power law describing the Doppler width as a function of radius.
+                               'zr': 0.1,             # For elevated emission, the z/r value.
+                               'target_res': 0.5      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
+                               }
 
 # The following is for  kickstarting auto-multithresh to help it capture diffuse emission using make_mask_for_diffuse_emission() from keplerian_mask, which is a hack by Jess:
 # mask_dict['SO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
 #                                       'v_min': 3000.,        # Maximum velocity in [m/s] of the mask.
 #                                       'v_max': 8000.,        # Maximum velocity in [m/s] of the mask.
 #                                       }
-# mask_dict['C18O_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-#                                         'v_min': 2000.,        # Maximum velocity in [m/s] of the mask.
-#                                         'v_max': 9000.,        # Maximum velocity in [m/s] of the mask.
-#                                         }
-mask_dict['13CO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                        'v_min': 4926.,        # Maximum velocity in [m/s] of the mask.
-                                        'v_max': 6900.,        # Maximum velocity in [m/s] of the mask.
-                                        }
-mask_dict['12CO_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
-                                        'v_min': -4212.,        # Maximum velocity in [m/s] of the mask.
+mask_dict['C18O_diffuse_emission']   = {'r_max': 15.0,         # Maximum radius in [arcsec] of the mask.
+                                        'v_min': 4422.,        # Maximum velocity in [m/s] of the mask.
                                         'v_max': 7362.,        # Maximum velocity in [m/s] of the mask.
                                         }
-
+mask_dict['13CO_diffuse_emission']   = {'r_max': 15.0,         # Radius in [arcsec] of the mask.
+                                        'v_min': 4296.,#4926.,        # Minimum velocity in [m/s] of the mask.
+                                        'v_max': 7530.,#6900.,        # Maximum velocity in [m/s] of the mask.
+                                        }
+mask_dict['12CO_diffuse_emission']   = {'r_max': 15.0,         # Radius in [arcsec] of the mask.
+                                        'v_min': 3204.,#4212.,        # Minimum velocity in [m/s] of the mask.
+                                        'v_max': 8286.,#7362.,        # Maximum velocity in [m/s] of the mask.
+                                        }
 
 
 # # The following is for estimating noise, using with make_mask_of_linefree_channels() from keplerian_mask, which is a hack by Jess:

@@ -18,7 +18,8 @@ import dictionary_disk as ddisk # and replace disk_dict with ddisk.disk_dict
 """######### Properties common to all EBs #########"""
 
 CANFAR_path     = '/arc/projects/abaur/'
-NRAO_path       = '/lustre/cv/observers/cv-13687/data/'
+# NRAO_path       = '/lustre/cv/observers/cv-13687/data/'   # short term account (~Nov-Dec 2022)
+NRAO_path       = '/lustre/cv/users/jspeedie/data/'         # long term account (1 year starting Jan. 2023)
 LB_raw_path     = '2021.1.00690.S/science_goal.uid___A001_X15a2_Xb69/group.uid___A001_X15a2_Xb6a/member.uid___A001_X15a2_Xb6b/calibrated/'
 SB_raw_path     = '2021.1.00690.S/science_goal.uid___A001_X15a2_Xb69/group.uid___A001_X15a2_Xb6a/member.uid___A001_X15a2_Xb6d/calibrated/'
 step1_path      = 'workflow/step1/'

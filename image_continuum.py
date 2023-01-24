@@ -1,3 +1,4 @@
+# Run this script in a virtual environment, made with the following:
 # python3 -m venv modularcasa
 # source modularcasa/bin/activate
 # (modularcasa) pip install --upgrade pip wheel

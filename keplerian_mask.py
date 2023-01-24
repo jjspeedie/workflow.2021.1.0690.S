@@ -378,21 +378,6 @@ def _save_as_mask(image, tolerance=0.01):
     ctk.makemask(mode='copy', inpimage=image, inpmask='{}:mask0'.format(image),
              output=image, overwrite=True)
 
-#
-# def _save_as_mask_for_estimating_noise(image, tolerance=0.01):
-#     """
-#     Identical to _save_as_mask, but with an added suffix for the mask name.
-#     Save the provided images as a boolean mask.
-#     Args:
-#         image (str): Image to save as a mask.
-#         tolerance (optional[float]): Values below this value considered to be
-#             masked.
-#     """
-#     ia.open(image)
-#     ia.calcmask('"{}" > {:.2f}'.format(image, tolerance), name='mask0')
-#     ia.done()
-#     ctk.makemask(mode='copy', inpimage=image, inpmask='{}:mask0'.format(image),
-#              output=image+'.mask_for_estimating_rms.image', overwrite=True)
 
 # def _save_as_image_for_estimating_noise(image, mask, overwrite=True):
 #     """Identical to _save_as_image, but with an added suffix for the mask name.
@@ -413,6 +398,18 @@ def _save_as_image_for_diffuse_emission(image, mask, overwrite=True):
     coord_sys = ia.coordsys().torecord()
     ia.close()
     outfile = _trim_name(image).replace('.image', '.initial_mask_for_diffuse_emission.image')
+    if overwrite:
+        ctk.rmtables(outfile)
+    ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
+    ia.close()
+
+def _save_as_image_keplerian(image, mask, overwrite=True):
+    """Identical to _save_as_image, but with a different suffix for the mask name.
+    Save as an image by copying the header info from 'image'."""
+    ia.open(image)
+    coord_sys = ia.coordsys().torecord()
+    ia.close()
+    outfile = _trim_name(image).replace('.image', '.initial_mask_keplerian')
     if overwrite:
         ctk.rmtables(outfile)
     ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
@@ -597,7 +594,6 @@ def make_mask_for_diffuse_emission(image, inc, PA, dist, mstar, vlsr, dx0=0.0, d
             mask = np.where(np.logical_or(mask, tmp_mask), 1.0, 0.0)
 
     # Save it as a mask.
-    # _save_as_image_for_estimating_noise(image, mask) # creates image+'.mask_for_estimating_rms.image'
     _save_as_image_for_diffuse_emission(image, mask) # creates image+'.initial_mask_for_diffuse_emission.image'
     _save_as_mask(image.replace('.image', '.initial_mask_for_diffuse_emission.image'), tolerance)
     mask = image.replace('.image', '.initial_mask_for_diffuse_emission.image')
@@ -617,7 +613,103 @@ def make_mask_for_diffuse_emission(image, inc, PA, dist, mstar, vlsr, dx0=0.0, d
         return rms
 
 
+def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=0.0,
+              z_func=None, dV0=300.0, dVq=-0.5, r_min=0.0, r_max=4.0,
+              nbeams=None, target_res=None, tolerance=0.01, restfreqs=None,
+              estimate_rms=True, max_dzr=0.2, export_FITS=False,
+              cont_image=None):
+    """
+    Jess: Only changes are to save the mask as .initial_mask_keplerian
+    Make a Keplerian mask for CLEANing.
+    Args:
+        image (str): Path to the image file to make the mask for.
+        inc (float): Inclination of the disk in [deg].
+        PA (float): Position angle of the disk, measured Eastwards of North to
+            the redshifted axis, in [deg].
+        dist (float): Source distance in [pc].
+        mstar (float): Mass of the central star in [Msun].
+        vlsr (float): Systemic velocity in [m/s].
+        disk_dict (dict): Dictionary of disk parameters from
+            'generalanalysis/diskdictionary.py'.
+        dx0 (optional[float]): Source center offset along x-axis [arcsec].
+        dy0 (optional[float]): Source center offset along y-axis [arcsec].
+        zr (optional[float]): For elevated emission, the z/r value.
+        z_func (optional[callable]: For elevated emission, a callable
+            function which takes the disk midplane radius in [arcsec] and
+            returns the emission height in [arcsec]. This will take precedent
+            over `zr`.
+        dV0 (optional[float]): The Doppler width of the line in [m/s] at 1
+            arcsec.
+        dVq (optional[float]): The exponent of the power law describing the
+            Doppler width as a function of radius.
+        r_min (optional[float]): Minimum radius in [arcsec] of the mask.
+        r_max (optional[float]): Maximum radius in [arcsec] of the mask.
+        nbeams (optional[float]): Convovle the mask with a beam with axes
+            scaled by a factor of `nbeams`.
+        target_res (optional[float]): Instead of scaling the CLEAN beam for the
+            convolution kernel, specify the FWHM of the convolution kernel
+            directly.
+        tolerance (optional[float]): The threshold to consider the convolved
+            mask where there is emisson. Typically used to remove the noise
+            from the convolution.
+        restfreqs (optional[list]): If the image contains multiple lines, a
+            list of their rest frequencies. Can either be in strings
+            including the unit, ``'230.580GHz'``, or as floats, ``230.580e9``,
+            assumed to be in [Hz].
+        estimate_rms (optional[bool]): If True, calculate and return the RMS of
+            the masked regions to estimate CLEANing thresholds.
+        max_dzr (optional[float]): Maximum spacing in zr to use when filling in
+            the image plane for highly elevated models.
+        export_FITS (optional[bool]): If True, export the mask as a FITS file.
+        cont_image (str): Path to the continuum image file to include in mask.
+            Thresholded at 8 sigma.
+    Returns:
+        rms (float): The RMS of the masked regions if `estimate_rms` is True.
+    """
+    # Grab the velocity axis.
+    image = image if image[-1] != '/' else image[:-1]
+    v_axis = _generate_axes(image)[-1]
+    dvchan = 0.5 * abs(np.diff(v_axis).mean())
 
+    # Define the rest frequencies and cycle through them.
+    mask = None
+    zr_list = _make_zr_list(zr, max_dzr) if z_func is None else [-1., 0., 1.]
+    for offset in _get_offsets(image, restfreqs):
+        for zr in zr_list:
+            r, t, z = _get_disk_coords(image, dx0, dy0, inc, PA, zr, z_func)
+            vkep = _get_projected_vkep(r, t, z, mstar, dist, inc, vlsr+offset)
+            dV = _get_linewidth(r, dV0, dVq)
+            r_mask = np.logical_and(r >= r_min, r <= r_max)
+            v_mask = abs(v_axis[None, None, None, :] - vkep) < dV + dvchan
+            tmp_mask = np.logical_and(r_mask, v_mask)
+            if mask is None:
+                mask = np.where(tmp_mask, 1.0, 0.0)
+            else:
+                mask = np.where(np.logical_or(mask, tmp_mask), 1.0, 0.0)
+
+    # Save it as a mask. Again, clunky but it works.
+    _save_as_image_keplerian(image, mask)
+    if (nbeams is not None) or (target_res is not None):
+        _convolve_image(image, image.replace('.image', '.initial_mask_keplerian.image'),
+                        nbeams=nbeams, target_res=target_res)
+    _save_as_mask(image.replace('.image', '.initial_mask_keplerian.image'), tolerance)
+    if cont_image:
+        _combine_with_cont(image.replace('.image', '.initial_mask_keplerian.image'), cont_image)
+    mask = image.replace('.image', '.initial_mask_keplerian.image')
+
+    # Export as a FITS file if requested.
+    if export_FITS:
+        ctk.exportfits(imagename=mask, fitsimage=mask.replace('.image', '.fits'),
+                   dropstokes=True)
+
+    # Estimate the RMS of the un-masked pixels.
+    if estimate_rms:
+        rms = ctk.imstat(imagename=image, mask='"{}" < 1.0'.format(mask))['rms'][0]
+        print_rms = rms if rms > 1e-2 else rms * 1e3
+        print_unit = 'Jy' if rms > 1e-2 else 'mJy'
+        print("# Estimated RMS of unmasked regions: " +
+              "{:.2f} {}/beam".format(print_rms, print_unit))
+        return rms
 
 
 
