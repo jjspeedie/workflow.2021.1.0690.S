@@ -712,6 +712,41 @@ def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=
         return rms
 
 
+def make_mask_from_model(image, tolerance):
+    """
+    Jess: Make a mask from the clean model based on where the model is higher
+        than some value "tolerance". Only really works if the image was
+        cleaned with deconvolver='multiscale' and the model is a superposition
+        of Gaussians.
+        Model image is in units of Jy/pixel, so tolerance is in units of Jy/pixel.
+    Args:
+        image (str): Path to the model image file to make the mask out of.
+        tolerance (optional[float]): The threshold to consider the convolved
+            mask where there is emisson. Typically used to remove the noise
+            from the convolution.
+    """
+
+
+    # Make a copy of the model image for safe keeping
+    os.system('cp -r '+image+' '+image+'.copy')
+
+    image += '.copy'
+
+    # Turn the model image into a mask image (model is overwritten)
+    ia.open(image)
+    ia.calcmask('"{}" > {:.8f}'.format(image, tolerance), name='mask0')
+    # ia.summary()
+    ia.done()
+    ctk.makemask(mode='copy', inpimage=image, inpmask='{}:mask0'.format(image),
+             output=image+'.initial.mask', overwrite=True)
+
+    # "Rename" the mask (by moving the contents into .model.mask)
+    # os.system('mkdir '+image+'.mask/')
+    # os.system('mv '+image+'/* '+image+'.mask/')
+    # Undo all this mischief
+    # os.system('mv '+image+'.copy/* '+image)
+    # os.system('rmdir '+image+'.copy')
+
 
 
 

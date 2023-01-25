@@ -37,6 +37,7 @@ import dictionary_lines as dlines # contains line_dict
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_mask as make_keplerian_mask
 from keplerian_mask import make_mask_for_diffuse_emission
+from keplerian_mask import make_mask_from_model
 # from calc_uvtaper import calc_taper
 from shutil import copytree
 # from shutil import rmtree
@@ -332,30 +333,35 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['13CO', '12CO', 'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
+molecules       = ['13CO', '12CO', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
 vres_version    = 'v2' # 17-Jan-2023
 
 for line in molecules:
-    for robust in [0.5]:
+    for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
             robust          = robust
             imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line
 
-            print("################################################")
-            print("###### About to start imaging measurement set: ", vis)
-            print("###### Creating files whose names will start with: ", imagename)
-            print("###### Image cubes will have spectral resolution defined by version: ", vres_version)
-            print("###### And Briggs robust weighting: ", robust)
-            print("################################################")
+            print("Testing function make_mask_from_model...")
+            make_mask_from_model(imagename+'.clean.model', 0.001)
 
-            tclean_wrapper_line(vis            = vis,
-                                imagename      = imagename,
-                                line           = line,
-                                robust         = robust,
-                                vres_version   = vres_version
-                                )
+            # sys.exit()
+
+            # print("################################################")
+            # print("###### About to start imaging measurement set: ", vis)
+            # print("###### Creating files whose names will start with: ", imagename)
+            # print("###### Image cubes will have spectral resolution defined by version: ", vres_version)
+            # print("###### And Briggs robust weighting: ", robust)
+            # print("################################################")
+            #
+            # tclean_wrapper_line(vis            = vis,
+            #                     imagename      = imagename,
+            #                     line           = line,
+            #                     robust         = robust,
+            #                     vres_version   = vres_version
+            #                     )
 
 """
 ######################################################
