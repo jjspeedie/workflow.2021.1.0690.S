@@ -45,8 +45,8 @@ reducer: J. Speedie
 
 """ Starting matter """
 import os
-execfile('dictionary_data.py') # loads data_dict
 execfile('dictionary_disk.py') # loads disk_dict
+execfile('dictionary_data.py') # loads data_dict
 execfile('step1_utils.py') # loads multiple functions
 import sys
 sys.path.append(data_dict['NRAO_path']+'analysis_scripts') # path to analysis_scripts/
@@ -411,6 +411,152 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
     # for spwi in data_dict[EB]['line_spws']:
     #     plotms(vis=inputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi), plotfile=inputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
     #     plotms(vis=outputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi-1), plotfile=outputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
+
+
+
+
+"""
+#############################################################
+###################### SPLIT OUT SPWS #######################
+#############################################################
+"""
+
+""" Note we originally performed velocity regridding with cvel2 at this time.
+But as we later would like to image on an arbitrary velocity regrid, we will not
+do any regridding. """
+
+""" First do non-continuum-subtracted ms's (contains spws 0,1,2,3,4) """
+# for EB in data_dict['EBs']:
+#     for i,spwi in enumerate(['1', '2', '3', '4']):
+#         inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
+#         outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(i)+'.ms') # want i instead of spwi to align with contsub indexing
+#
+#         os.system('rm -rf ' + outputvis)
+#         split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 1,2,3,4
+#         listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+
+""" Second do continuum-subtracted ms's (contains spws 0,1,2,3) """
+# for EB in data_dict['EBs']:
+#     for i,spwi in enumerate(['0', '1', '2', '3']):
+#         inputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub']
+#         outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub'].replace('.ms', '_spw'+spwi+'.ms') # want spwi now
+#
+#         os.system('rm -rf ' + outputvis)
+#         split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 0,1,2,3
+#         listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+
+
+"""
+####################################################################################
+########### COMBINE FINAL MEASUREMENT SETS, ONE FOR EACH LINE, AND SAVE ############
+####################################################################################
+"""
+molecules = ['SO', 'C18O', '13CO', '12CO']
+
+""" First do non-continuum-subtracted ms's """
+for spwi,molecule in enumerate(molecules):
+    ms_list_to_concatenate = []
+    for EB in data_dict['EBs']:
+        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms'))
+
+    print('For molecule: ', molecule)
+    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+
+    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms'
+
+    # os.system('rm -rf %s*' % final_line_ms)
+    # concat(vis          = ms_list_to_concatenate,
+    #        concatvis    = final_line_ms,
+    #        dirtol       = '0.1arcsec',
+    #        copypointing = False)
+    # listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+
+
+""" Second do continuum-subtracted ms's (contains spws 0,1,2,3) """
+for spwi,molecule in enumerate(molecules):
+    ms_list_to_concatenate = []
+    for EB in data_dict['EBs']:
+        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms')+'.contsub')
+
+    print('For molecule: ', molecule)
+    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+
+    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms.contsub'
+
+    # os.system('rm -rf %s*' % final_line_ms)
+    # concat(vis          = ms_list_to_concatenate,
+    #        concatvis    = final_line_ms,
+    #        dirtol       = '0.1arcsec',
+    #        copypointing = False)
+    # listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+
+os.system('mv ABAur*.tgz backups/')
+
+
+
+
+sys.exit()
+
+
+
+# BELOW THIS IS A REPEAT OF THE LAST TWO STEPS, BUT WITH CVEL2 APPLIED
+# ORIGINALLY PERFORMED ON DECEMBER 19 2022
+# REALIZED WE DO NOT WANT TO CVEL2 THE MS'S IN JANUARY 2023
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -6,8 +6,8 @@ Dictionary of data file names, paths, and properties used during reduction.
 """
 
 import numpy as np
-# execfile('dictionary_disk.py') # either this or the below line, depending if working in casa or modularcasa
-import dictionary_disk as ddisk # and replace disk_dict with ddisk.disk_dict
+execfile('dictionary_disk.py') # either this or the below line, depending if working in casa or modularcasa
+# import dictionary_disk as ddisk # and replace disk_dict with ddisk.disk_dict
 
 """
 ######################################################
@@ -30,14 +30,14 @@ step5_path      = 'workflow/step5/'
 prefix          = 'ABAur'
 
 continuum               = NRAO_path+'ABAur_continuum.bin30s.ms'
-line_12CO               = NRAO_path+'ABAur_12CO.bin30s.ms.contsub.cvel2'
-line_13CO               = NRAO_path+'ABAur_13CO.bin30s.ms.contsub.cvel2'
-line_C18O               = NRAO_path+'ABAur_C18O.bin30s.ms.contsub.cvel2'
-line_SO                 = NRAO_path+'ABAur_SO.bin30s.ms.contsub.cvel2'
-line_12CO_wcont         = NRAO_path+'ABAur_12CO.bin30s.ms.cvel2'
-line_13CO_wcont         = NRAO_path+'ABAur_13CO.bin30s.ms.cvel2'
-line_C18O_wcont         = NRAO_path+'ABAur_C18O.bin30s.ms.cvel2'
-line_SO_wcont           = NRAO_path+'ABAur_SO.bin30s.ms.cvel2'
+line_12CO               = NRAO_path+'ABAur_12CO.bin30s.ms.contsub'
+line_13CO               = NRAO_path+'ABAur_13CO.bin30s.ms.contsub'
+line_C18O               = NRAO_path+'ABAur_C18O.bin30s.ms.contsub'
+line_SO                 = NRAO_path+'ABAur_SO.bin30s.ms.contsub'
+line_12CO_wcont         = NRAO_path+'ABAur_12CO.bin30s.ms'
+line_13CO_wcont         = NRAO_path+'ABAur_13CO.bin30s.ms'
+line_C18O_wcont         = NRAO_path+'ABAur_C18O.bin30s.ms'
+line_SO_wcont           = NRAO_path+'ABAur_SO.bin30s.ms'
 
 SB_EB1_msplitcalsource = SB_raw_path+'uid___A002_Xf7ad58_Xd406.ms.split.cal.source'  # 34.0 GB
 SB_EB2_msplitcalsource = SB_raw_path+'uid___A002_Xf8f6a9_X15c79.ms.split.cal.source' # 32.3 GB
@@ -142,10 +142,10 @@ pure-continuum spw though'''
 cont_spws       = '0, 1, 2, 3, 4'
 
 '''For spectral averaging: Velocity ranges to flag out, about the line'''
-velocity_ranges = np.array([np.array([ddisk.disk_dict['v_sys']-3., ddisk.disk_dict['v_sys']+3.]),
-                            np.array([ddisk.disk_dict['v_sys']-4., ddisk.disk_dict['v_sys']+4.]),
-                            np.array([ddisk.disk_dict['v_sys']-6., ddisk.disk_dict['v_sys']+6.]),
-                            np.array([ddisk.disk_dict['v_sys']-10., ddisk.disk_dict['v_sys']+10.])])
+velocity_ranges = np.array([np.array([disk_dict['v_sys']-3., disk_dict['v_sys']+3.]),
+                            np.array([disk_dict['v_sys']-4., disk_dict['v_sys']+4.]),
+                            np.array([disk_dict['v_sys']-6., disk_dict['v_sys']+6.]),
+                            np.array([disk_dict['v_sys']-10., disk_dict['v_sys']+10.])])
 
 '''For spectral averaging: The non-continuum spectral windows have total
 bandwidth less than 250 MHz (58.6 MHz), but we include them regardless using

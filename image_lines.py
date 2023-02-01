@@ -35,7 +35,7 @@ import dictionary_mask as dmask # contains mask_dict
 import dictionary_lines as dlines # contains line_dict
 
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
-from keplerian_mask import make_mask as make_keplerian_mask
+from keplerian_mask import make_keplerian_mask
 from keplerian_mask import make_mask_for_diffuse_emission
 from keplerian_mask import make_mask_from_model
 # from calc_uvtaper import calc_taper
@@ -50,11 +50,12 @@ os.environ['SAVE_ALL_AUTOMASKS']="true"
 
 def tclean_wrapper_line(vis,
                         imagename,
+                        maskname,
                         line,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v2',
+                        vres_version='v3',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -143,26 +144,27 @@ def tclean_wrapper_line(vis,
     if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
         print("The "+line+" line contains diffuse emission at central channels that auto-multithresh struggles to mask. We shall help it...")
 
-        print("Have you already made a mask for kickstarting auto-multithresh with a broad mask?")
-        initial_mask = imagename+'.initial_mask_for_diffuse_emission.image'
+        print("Have you already made a mask for kickstarting auto-multithresh?")
+        initial_mask = maskname
         if os.path.exists(initial_mask):
-            print('--> Yes, initial_mask_for_diffuse_emission.image already exists, and we will use it now...')
+            print('--> Yes, '+maskname+' already exists, and we will use it now...')
         else:
-            print('--> No, initial_mask_for_diffuse_emission.image does not exist yet; we are making it now...')
-            make_mask_for_diffuse_emission(image           = imagename+'.image',
-                                           inc             = ddisk.disk_dict['incl'],
-                                           PA              = ddisk.disk_dict['PA_gofish'],
-                                           mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-                                           dist            = ddisk.disk_dict['distance'],
-                                           vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-                                           v_min           = dmask.mask_dict[line+'_diffuse_emission']['v_min'], # in m/s
-                                           v_max           = dmask.mask_dict[line+'_diffuse_emission']['v_max'], # in m/s
-                                           r_max           = dmask.mask_dict[line+'_diffuse_emission']['r_max'], # in arcsec
-                                           restfreqs       = linefreq,
-                                           export_FITS     = True, # this could be false
-                                           estimate_rms    = False) # this won't be an accurate estimate because there is emission outside the diffuse mask
+            print('--> No, '+maskname+' does not exist yet; so we have to exit.')
+            sys.exit()
+            # make_mask_for_diffuse_emission(image           = imagename+'.image',
+            #                                inc             = ddisk.disk_dict['incl'],
+            #                                PA              = ddisk.disk_dict['PA_gofish'],
+            #                                mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
+            #                                dist            = ddisk.disk_dict['distance'],
+            #                                vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
+            #                                v_min           = dmask.mask_dict[line+'_diffuse_emission']['v_min'], # in m/s
+            #                                v_max           = dmask.mask_dict[line+'_diffuse_emission']['v_max'], # in m/s
+            #                                r_max           = dmask.mask_dict[line+'_diffuse_emission']['r_max'], # in arcsec
+            #                                restfreqs       = linefreq,
+            #                                export_FITS     = True, # this could be false
+            #                                estimate_rms    = False) # this won't be an accurate estimate because there is emission outside the diffuse mask
 
-    else: # line==SO; make a keplerian_mask
+    elif line=='SO': # make a keplerian_mask
         print("The "+line+" line shall be initialized with a Keplerian mask...")
 
         print("Have you already made a mask for kickstarting auto-multithresh with a keplerian mask?")
@@ -181,7 +183,6 @@ def tclean_wrapper_line(vis,
                                 export_FITS     = True,
                                 estimate_rms    = True, # prints and returns rms (Jy/beam) outside mask, nice to compare with our estimate
                                 **dmask.mask_dict[line+'_keplerian'])
-
 
     """ Clean down to the cleaning threshold """
     imagename = imagename.replace('.dirty', '.clean')
@@ -266,8 +267,8 @@ def tclean_wrapper_line(vis,
 
                            # Automasking Parameters below this line
                            usemask           = 'auto-multithresh',
-                           sidelobethreshold = 3.0,    #          Table of Standard values: 12m (long) b75>300m = 3.0   # previously: 2.0
-                           noisethreshold    = 3.0,    #          Table of Standard values: 12m (long) b75>300m = 5.0   # previously: 4.0
+                           sidelobethreshold = 2.0,    #          Table of Standard values: 12m (long) b75>300m = 3.0   # changed: 2.0
+                           noisethreshold    = 4.0,    #          Table of Standard values: 12m (long) b75>300m = 5.0   # changed: 4.0
                            lownoisethreshold = 1.5,    #          Table of Standard values: 12m (long) b75>300m = 1.5
                            minbeamfrac       = 0.3,    #          Table of Standard values: 12m (long) b75>300m = 0.3
                            growiterations    = 75,     #          controls the maximum number of iterations that binary dilation performs. A value between 75 and 100 is usually adequate.
@@ -276,6 +277,7 @@ def tclean_wrapper_line(vis,
 
     print("Saving summary log file of tcleaning process...")
     np.save(imagename+'.tclean.summary.npy', rec)
+    print(rec)
 
     print("Exporting clean image products of the "+line+" line to FITS...")
     for ext in tclean_sv_clean_extensions:
@@ -333,42 +335,40 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['13CO', '12CO', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
-vres_version    = 'v2' # 17-Jan-2023
+molecules       = ['SO']#'13CO', '12CO', 'C18O', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
+vres_version    = 'v3' # 17-Jan-2023
 
 for line in molecules:
-    for robust in [1.5]:
+    for robust in [0.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
             robust          = robust
             imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line
+            maskname        = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/masks/'+'v2'+'_robust1.5_10mean_model.mask'
 
-            print("Testing function make_mask_from_model...")
-            make_mask_from_model(imagename+'.clean.model', 0.001)
+            print("################################################")
+            print("###### About to start imaging measurement set: ", vis)
+            print("###### Creating files whose names will start with: ", imagename)
+            print("###### Image cubes will have spectral resolution defined by version: ", vres_version)
+            print("###### And Briggs robust weighting: ", robust)
+            print("###### Auto-multithresh will be kickstarted with mask: ", maskname)
+            print("################################################")
 
-            # sys.exit()
-
-            # print("################################################")
-            # print("###### About to start imaging measurement set: ", vis)
-            # print("###### Creating files whose names will start with: ", imagename)
-            # print("###### Image cubes will have spectral resolution defined by version: ", vres_version)
-            # print("###### And Briggs robust weighting: ", robust)
-            # print("################################################")
-            #
-            # tclean_wrapper_line(vis            = vis,
-            #                     imagename      = imagename,
-            #                     line           = line,
-            #                     robust         = robust,
-            #                     vres_version   = vres_version
-            #                     )
+            tclean_wrapper_line(vis            = vis,
+                                imagename      = imagename,
+                                line           = line,
+                                robust         = robust,
+                                vres_version   = vres_version,
+                                maskname       = maskname
+                                )
 
 """
 ######################################################
 #### Adjustments to this script still to be made #####
 ######################################################
 
-- TENTATIVE - DOES IT SHRINK? Confirm broad mask is used by automultithresh as initial mask
+- Get the right mask to kickstart auto-multithresh to mask everything
 - Save image_metrics csv
 - Flexibility for different robust parameters and uv tapers
     - Make cell size dependent on those choices
@@ -385,11 +385,6 @@ CAN'T - Save imview frames of images made overlaying automultithresh mask
 """
 
 
-"""
-Spectral extent of diffuse line emission not captured by automultithresh, measured in (shallowly) cleaned robust=1.5 image cubes:
-12CO:
-13CO:
-"""
 
 """
 Spectral extent of line emission, measured in (shallowly) cleaned robust=1.5 image cubes:

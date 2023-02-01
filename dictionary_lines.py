@@ -17,9 +17,13 @@ line_dict['12CO'] = {'qn'    : '2-1',                # Transition
                      # 'v1_start' : '-4.23km/s',
                      # 'v1_width' : '0.042km/s',
                      # Spectral resolution for imaging, version 2 (17-Jan-2023):
-                     'v2_nchan' : 302,
-                     'v2_start' : '-0.198km/s',
-                     'v2_width' : '0.042km/s'
+                     # 'v2_nchan' : 302,
+                     # 'v2_start' : '-0.198km/s',
+                     # 'v2_width' : '0.042km/s',
+                     # Spectral resolution for imaging, version 3 (26-Jan-2023):
+                     'v3_nchan' : 302,
+                     'v3_start' : '-0.198km/s',
+                     'v3_width' : '0.042km/s'
                     }
 
 line_dict['13CO'] = {'qn'    : '2-1',                # Transition
@@ -32,9 +36,13 @@ line_dict['13CO'] = {'qn'    : '2-1',                # Transition
                      # 'v1_start' : '-4.23km/s',
                      # 'v1_width' : '0.042km/s',
                      # Spectral resolution for imaging, version 2 (17-Jan-2023):
-                     'v2_nchan' : 186,
-                     'v2_start' : '2.070km/s',
-                     'v2_width' : '0.042km/s'
+                     # 'v2_nchan' : 186,
+                     # 'v2_start' : '2.070km/s',
+                     # 'v2_width' : '0.042km/s',
+                     # Spectral resolution for imaging, version 3 (26-Jan-2023):
+                     'v3_nchan' : 186,
+                     'v3_start' : '2.070km/s',
+                     'v3_width' : '0.042km/s'
                     }
 
 line_dict['C18O'] = {'qn'    : '2-1',                 # Transition
@@ -47,9 +55,13 @@ line_dict['C18O'] = {'qn'    : '2-1',                 # Transition
                      # 'v1_start' : '0.81km/s',
                      # 'v1_width' : '0.084km/s',
                      # Spectral resolution for imaging, version 2 (17-Jan-2023):
-                     'v2_nchan' : 82,
-                     'v2_start' : '2.658km/s',
-                     'v2_width' : '0.084km/s'
+                     # 'v2_nchan' : 82,
+                     # 'v2_start' : '2.658km/s',
+                     # 'v2_width' : '0.084km/s',
+                     # Spectral resolution for imaging, version 3 (26-Jan-2023):
+                     'v3_nchan' : 82,
+                     'v3_start' : '2.658km/s',
+                     'v3_width' : '0.084km/s'
                     }
 
 line_dict['SO']   = {'qn'    : '6(5)-5(4)',           # Transition
@@ -62,7 +74,11 @@ line_dict['SO']   = {'qn'    : '6(5)-5(4)',           # Transition
                      # 'v1_start' : '0.81km/s',
                      # 'v1_width' : '0.084km/s',
                      # Spectral resolution for imaging, version 2 (17-Jan-2023):
-                     'v2_nchan' : 60,
-                     'v2_start' : '3.582km/s',
-                     'v2_width' : '0.084km/s'
+                     # 'v2_nchan' : 60,
+                     # 'v2_start' : '3.582km/s',
+                     # 'v2_width' : '0.084km/s',
+                     # Spectral resolution for imaging, version 3 (26-Jan-2023):
+                     'v3_nchan' : 60,
+                     'v3_start' : '3.582km/s',
+                     'v3_width' : '0.084km/s'
                     }

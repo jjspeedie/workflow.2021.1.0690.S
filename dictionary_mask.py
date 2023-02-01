@@ -13,7 +13,7 @@ mask_dict['continuum'] = {'circle mask' : 'circle[[%s, %s], %.1farcsec]' %('04h5
                          }
 
 # The following is for cleaning, using with Rich Teague's keplerian_mask, based on experimentation:
-mask_dict['SO_keplerian']   = {'r_max': 3.0,          # Maximum radius in [arcsec] of the mask.
+mask_dict['SO_keplerian']   = {'r_max': 3.5,          # Maximum radius in [arcsec] of the mask.
                                'dV0': 400.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
                                'dVq': -0.5,           # The exponent of the power law describing the Doppler width as a function of radius.
                                'zr': 0.1,             # For elevated emission, the z/r value.

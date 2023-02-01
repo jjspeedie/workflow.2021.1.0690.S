@@ -406,10 +406,12 @@ def _save_as_image_for_diffuse_emission(image, mask, overwrite=True):
 def _save_as_image_keplerian(image, mask, overwrite=True):
     """Identical to _save_as_image, but with a different suffix for the mask name.
     Save as an image by copying the header info from 'image'."""
+    print('image: ', image)
     ia.open(image)
     coord_sys = ia.coordsys().torecord()
     ia.close()
-    outfile = _trim_name(image).replace('.image', '.initial_mask_keplerian')
+    outfile = _trim_name(image).replace('.image', '.initial_mask_keplerian.image')
+    print('outfile: ', outfile)
     if overwrite:
         ctk.rmtables(outfile)
     ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
