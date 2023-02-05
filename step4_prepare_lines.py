@@ -454,50 +454,50 @@ do any regridding. """
 molecules = ['SO', 'C18O', '13CO', '12CO']
 
 """ First do non-continuum-subtracted ms's """
-for spwi,molecule in enumerate(molecules):
-    ms_list_to_concatenate = []
-    for EB in data_dict['EBs']:
-        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms'))
-
-    print('For molecule: ', molecule)
-    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
-
-    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms'
-
-    # os.system('rm -rf %s*' % final_line_ms)
-    # concat(vis          = ms_list_to_concatenate,
-    #        concatvis    = final_line_ms,
-    #        dirtol       = '0.1arcsec',
-    #        copypointing = False)
-    # listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
-    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+# for spwi,molecule in enumerate(molecules):
+#     ms_list_to_concatenate = []
+#     for EB in data_dict['EBs']:
+#         ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms'))
+#
+#     print('For molecule: ', molecule)
+#     print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+#
+#     final_line_ms = 'ABAur_'+molecule+'.bin30s.ms'
+#
+#     os.system('rm -rf %s*' % final_line_ms)
+#     concat(vis          = ms_list_to_concatenate,
+#            concatvis    = final_line_ms,
+#            dirtol       = '0.1arcsec',
+#            copypointing = False)
+#     listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+#     os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
 
 
 """ Second do continuum-subtracted ms's (contains spws 0,1,2,3) """
-for spwi,molecule in enumerate(molecules):
-    ms_list_to_concatenate = []
-    for EB in data_dict['EBs']:
-        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms')+'.contsub')
-
-    print('For molecule: ', molecule)
-    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
-
-    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms.contsub'
-
-    # os.system('rm -rf %s*' % final_line_ms)
-    # concat(vis          = ms_list_to_concatenate,
-    #        concatvis    = final_line_ms,
-    #        dirtol       = '0.1arcsec',
-    #        copypointing = False)
-    # listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
-    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
-
-os.system('mv ABAur*.tgz backups/')
-
-
+# for spwi,molecule in enumerate(molecules):
+#     ms_list_to_concatenate = []
+#     for EB in data_dict['EBs']:
+#         ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms')+'.contsub')
+#
+#     print('For molecule: ', molecule)
+#     print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+#
+#     final_line_ms = 'ABAur_'+molecule+'.bin30s.ms.contsub'
+#
+#     os.system('rm -rf %s*' % final_line_ms)
+#     concat(vis          = ms_list_to_concatenate,
+#            concatvis    = final_line_ms,
+#            dirtol       = '0.1arcsec',
+#            copypointing = False)
+#     listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+#     os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+#
+# os.system('mv ABAur*.tgz backups/')
 
 
-sys.exit()
+
+
+# sys.exit()
 
 
 
