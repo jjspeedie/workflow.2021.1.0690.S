@@ -40,9 +40,13 @@ line_dict['13CO'] = {'qn'    : '2-1',                # Transition
                      # 'v2_start' : '2.070km/s',
                      # 'v2_width' : '0.042km/s',
                      # Spectral resolution for imaging, version 3 (26-Jan-2023):
-                     'v3_nchan' : 186,
-                     'v3_start' : '2.070km/s',
-                     'v3_width' : '0.042km/s'
+                     # 'v3_nchan' : 186,
+                     # 'v3_start' : '2.070km/s',
+                     # 'v3_width' : '0.042km/s'
+                     # Spectral resolution for imaging, version 4 (27-Feb-2023):
+                     'v4_nchan' : 186,
+                     'v4_start' : '2.070km/s',
+                     'v4_width' : '0.042km/s'
                     }
 
 line_dict['C18O'] = {'qn'    : '2-1',                 # Transition

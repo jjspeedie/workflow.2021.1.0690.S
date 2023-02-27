@@ -64,7 +64,7 @@ def tclean_wrapper_line(vis,
         - Make a dirty image cube
         - Estimate the rms noise in the dirty image cube in line free channels
             (makes a mask to do this if one does not already exist)
-        - Cleans down to a threshold of 4x the estimated rms noise, using auto-multithresh
+        - Cleans down to a threshold of 2x the estimated rms noise, using auto-multithresh
             (saves the intermediate masks, saves a summary log file of tclean's iterations)
         - Performs JvM correction and primary beam correction
         - Saves a csv of metrics used for imaging, saves a csv of metrics of the resulting images
@@ -138,7 +138,7 @@ def tclean_wrapper_line(vis,
     print("Dirty image complete, estimating rms noise in the dirty image...")
     rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0]
     print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
-    threshold   = "%.8f" %(3.*rms*1e3)+'mJy'
+    threshold   = "%.8f" %(2.*rms*1e3)+'mJy'
 
 
     if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
@@ -335,8 +335,8 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['SO']#'13CO', '12CO', 'C18O', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
-vres_version    = 'v3' # 17-Jan-2023
+molecules       = ['13CO']#'13CO', '12CO', 'C18O', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
+vres_version    = 'v4' # 27-Feb-2023
 
 for line in molecules:
     for robust in [0.5]:
@@ -367,6 +367,8 @@ for line in molecules:
 ######################################################
 #### Adjustments to this script still to be made #####
 ######################################################
+
+- ADD fullsummary=True (!!)
 
 - Get the right mask to kickstart auto-multithresh to mask everything
 - Save image_metrics csv

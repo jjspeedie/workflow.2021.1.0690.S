@@ -23,6 +23,7 @@ import os
 import sys
 import numpy as np
 import pandas as pd
+import pickle
 import casatools
 tb = casatools.table()
 import casatasks
@@ -33,11 +34,6 @@ import dictionary_data as ddata # contains data_dict
 import dictionary_mask as dmask # contains mask_dict
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 # from calc_uvtaper import calc_taper
-# import linedictionary
-# import mask_dictionary
-# from keplerian_mask import make_mask
-# from shutil import copytree
-# from shutil import rmtree
 
 def estimate_rms(imagename, region=''):
     """ Use CASA's imstat task to estimate the rms noise outside the given region (annulus). """
@@ -73,7 +69,6 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
 
     Breakdown of the procedure:
         - Make a dirty image; use that to estimate rms noise for cleaning threshold
-        - Do primary beam correction of non-JvM corrected image
         - Clean down to the threshold
         - Do JvM correction, and pbcorrection of JvM images simultaneously
         - Saves csv of key metrics used during the cleaning process
@@ -92,6 +87,9 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
         print('Deleting previous file: ', imagename+ext)
         os.system('rm -rf '+ imagename+ext)
 
+    imsize      = 2048,                  # to image to FWHM of primary beam; FOV 40 arcsec (diameter)
+    cell        = '0.02arcsec',          # samples bmin ~9 times
+
     print("Making a dirty image of the continuum...")
     casatasks.tclean(vis              = vis, # msfile to image
                      imagename        = imagename, # file names preceding .image, .residual, etc.
@@ -99,8 +97,8 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
                      deconvolver      = 'hogbom', # better than multiscale, for continuum rings
                      weighting        = 'briggs',
                      robust           = robust,
-                     imsize           = 2000, # to image FOV of 20 arcsec (radius)
-                     cell             = '0.04arcsec', # samples beam 9-12 times,
+                     imsize           = imsize,
+                     cell             = cell,
                      mask             = mask,
                      spw              = '',
                      niter            = 0, # to make a dirty image
@@ -114,10 +112,11 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
 
     for ext in tclean_sv_extensions+['.image']:
         os.system('rm -rf '+ imagename+ext+'.fits')
-        exportfits(imagename+ext, imagename+ext+'.fits', overwrite=True)
+        exportfits(imagename+ext, imagename+ext+'.fits',
+                   dropstokes=True, overwrite=True)
 
-    rms         = estimate_rms(imagename=imagename+'.image', region=region) # 53.42 uJy/beam
-    threshold   = "%.8f" %(1.*rms/1e3)+'mJy'
+    rms         = estimate_rms(imagename=imagename+'.image', region=region)
+    threshold   = "%.8f" %(4.*rms/1e3)+'mJy'
 
     """ Clean down to the cleaning threshold """
     imagename = imagename.replace('.dirty', '.clean')
@@ -127,30 +126,37 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
         os.system('rm -rf '+ imagename+ext)
 
     print("Starting to clean the continuum down to threshold of "+threshold+"...")
-    casatasks.tclean(vis              = vis, # msfile to image
-                     imagename        = imagename, # file names preceding .image, .residual, etc.
-                     specmode         = 'mfs', # to make a continuum image
-                     deconvolver      = 'hogbom', # better than multiscale, for continuum rings
-                     weighting        = 'briggs',
-                     robust           = robust,
-                     imsize           = 2000, # to image FOV of 20 arcsec (radius)
-                     cell             = '0.04arcsec', # samples beam 9-12 times,
-                     mask             = mask,
-                     spw              = '',
-                     niter            = 100000, # 500 uJy/beam
-                     threshold        = threshold,
-                     interactive      = False,
-                     cycleniter       = 300,
-                     cyclefactor      = 1,
-                     smallscalebias   = 0.6, # CASA's default
-                     gain             = 0.2, # slightly low
-                     nterms           = 1, # Number of Taylor coefficients in the spectral model; nterms=1 : Assume flat spectrum source
-                     uvtaper          = uvtaper,
-                     savemodel        = 'none')
+    rec =   casatasks.tclean(vis              = vis, # msfile to image
+                             imagename        = imagename, # file names preceding .image, .residual, etc.
+                             specmode         = 'mfs', # to make a continuum image
+                             deconvolver      = 'hogbom', # better than multiscale, for continuum rings
+                             weighting        = 'briggs',
+                             robust           = robust,
+                             imsize           = imsize,
+                             cell             = cell,
+                             mask             = mask,
+                             spw              = '',
+                             niter            = 100000,
+                             threshold        = threshold,
+                             interactive      = False,
+                             cycleniter       = 300,
+                             cyclefactor      = 1,
+                             smallscalebias   = 0.6, # CASA's default
+                             gain             = 0.2, # slightly low
+                             nterms           = 1, # Number of Taylor coefficients in the spectral model; nterms=1 : Assume flat spectrum source
+                             uvtaper          = uvtaper,
+                             savemodel        = 'none')#,
+                             # fullsummary      = True) # This is an unexpected keyword argument...?!
+
+    print(" ******* Full summary *******")
+    print(rec)
+    with open(imagename+'_fullsummary.pkl', 'wb') as f:
+        pickle.dump(rec, f)
 
     for ext in tclean_sv_extensions:
         os.system('rm -rf '+ imagename+ext+'.fits')
-        exportfits(imagename+ext, imagename+ext+'.fits',overwrite=True)
+        exportfits(imagename+ext, imagename+ext+'.fits',
+                   dropstokes=True, overwrite=True)
 
     """ Do JvM correction (primary beam correction done concurrently) """
 
@@ -205,7 +211,7 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
 ######################################################
 """
 
-for robust in [1.0, 0.5, 0]:
+for robust in [0.5]:#, 1.0, 1.5]:
     vis             = ddata.data_dict['continuum']
     mask            = dmask.mask_dict['continuum']['circle mask']
     region          = dmask.mask_dict['continuum']['noise annulus']

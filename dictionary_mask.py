@@ -8,7 +8,7 @@ Dictionary of masking parameters for all lines and the continuum.
 
 mask_dict = {}
 
-mask_dict['continuum'] = {'circle mask' : 'circle[[%s, %s], %.1farcsec]' %('04h55m45.8549s', '+30.33.03.733', 2.), # J2000 common/aligned phase center
+mask_dict['continuum'] = {'circle mask' : 'circle[[%s, %s], %.1farcsec]' %('04h55m45.8549s', '+30.33.03.733', 2.2), # J2000 common/aligned phase center
                           'noise annulus' : "annulus[[%s, %s],['%.2farcsec', '10.0arcsec']]" % ('04h55m45.8549s', '+30.33.03.733', 4.) # J2000 common/aligned phase center
                          }
 

@@ -6,8 +6,8 @@ Dictionary of data file names, paths, and properties used during reduction.
 """
 
 import numpy as np
-execfile('dictionary_disk.py') # either this or the below line, depending if working in casa or modularcasa
-# import dictionary_disk as ddisk # and replace disk_dict with ddisk.disk_dict
+# execfile('dictionary_disk.py') # either this or the below line, depending if working in casa or modularcasa
+import dictionary_disk as ddisk # and replace disk_dict with ddisk.disk_dict
 
 """
 ######################################################
@@ -142,10 +142,10 @@ pure-continuum spw though'''
 cont_spws       = '0, 1, 2, 3, 4'
 
 '''For spectral averaging: Velocity ranges to flag out, about the line'''
-velocity_ranges = np.array([np.array([disk_dict['v_sys']-3., disk_dict['v_sys']+3.]),
-                            np.array([disk_dict['v_sys']-4., disk_dict['v_sys']+4.]),
-                            np.array([disk_dict['v_sys']-6., disk_dict['v_sys']+6.]),
-                            np.array([disk_dict['v_sys']-10., disk_dict['v_sys']+10.])])
+velocity_ranges = np.array([np.array([ddisk.disk_dict['v_sys']-3., ddisk.disk_dict['v_sys']+3.]),
+                            np.array([ddisk.disk_dict['v_sys']-4., ddisk.disk_dict['v_sys']+4.]),
+                            np.array([ddisk.disk_dict['v_sys']-6., ddisk.disk_dict['v_sys']+6.]),
+                            np.array([ddisk.disk_dict['v_sys']-10., ddisk.disk_dict['v_sys']+10.])])
 
 '''For spectral averaging: The non-continuum spectral windows have total
 bandwidth less than 250 MHz (58.6 MHz), but we include them regardless using
