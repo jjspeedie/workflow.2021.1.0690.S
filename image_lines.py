@@ -64,7 +64,7 @@ def tclean_wrapper_line(vis,
         - Make a dirty image cube
         - Estimate the rms noise in the dirty image cube in line free channels
             (makes a mask to do this if one does not already exist)
-        - Cleans down to a threshold of 2x the estimated rms noise, using auto-multithresh
+        - Cleans down to a threshold of 3x the estimated rms noise, using auto-multithresh
             (saves the intermediate masks, saves a summary log file of tclean's iterations)
         - Performs JvM correction and primary beam correction
         - Saves a csv of metrics used for imaging, saves a csv of metrics of the resulting images
@@ -136,7 +136,7 @@ def tclean_wrapper_line(vis,
 
 
     print("Dirty image complete, estimating rms noise in the dirty image...")
-    rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0]
+    rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0] # v_3 has a buffer of 20 channels before emission begins
     print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
     threshold   = "%.8f" %(2.*rms*1e3)+'mJy'
 
@@ -336,7 +336,7 @@ def tclean_wrapper_line(vis,
 """
 
 molecules       = ['13CO']#'13CO', '12CO', 'C18O', 'SO']#'C18O', 'SO']#'SO', '13CO', '12CO', 'C18O']#, 'SO']
-vres_version    = 'v4' # 27-Feb-2023
+vres_version    = 'v5' # 7-Mar-2023
 
 for line in molecules:
     for robust in [0.5]:
@@ -368,9 +368,6 @@ for line in molecules:
 #### Adjustments to this script still to be made #####
 ######################################################
 
-- ADD fullsummary=True (!!)
-
-- Get the right mask to kickstart auto-multithresh to mask everything
 - Save image_metrics csv
 - Flexibility for different robust parameters and uv tapers
     - Make cell size dependent on those choices
@@ -384,6 +381,7 @@ DONE - Finess/decide on keplerian mask parameters for SO
 DONE - Figure out good masks for 12CO, 13CO, C18O, save them
 CAN'T - Save the .last files for posterity [.LAST FILES AREN'T CREATED WITH MODULAR CASA]
 CAN'T - Save imview frames of images made overlaying automultithresh mask
+CAN'T - ADD fullsummary=True (!!) [tclean throws error, "unexpected keyword argument"]
 """
 
 

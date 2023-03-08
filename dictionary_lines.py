@@ -44,9 +44,13 @@ line_dict['13CO'] = {'qn'    : '2-1',                # Transition
                      # 'v3_start' : '2.070km/s',
                      # 'v3_width' : '0.042km/s'
                      # Spectral resolution for imaging, version 4 (27-Feb-2023):
-                     'v4_nchan' : 186,
-                     'v4_start' : '2.070km/s',
-                     'v4_width' : '0.042km/s'
+                     # 'v4_nchan' : 186,
+                     # 'v4_start' : '2.070km/s',
+                     # 'v4_width' : '0.042km/s'
+                     # Spectral grid offset for channel dropping diagnostics, version 5 (7-Mar-2023):
+                     'v5_nchan' : 181,
+                     'v5_start' : '2.238km/s', # offset by 5 channels (clean goes in chunks of 10, and rms noise estimation for clean threshold needs 10 channel buffer)
+                     'v5_width' : '0.042km/s'
                     }
 
 line_dict['C18O'] = {'qn'    : '2-1',                 # Transition
