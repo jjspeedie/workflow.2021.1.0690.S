@@ -58,7 +58,7 @@ def tclean_wrapper_line(vis,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v6',
+                        vres_version='v7',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -67,7 +67,7 @@ def tclean_wrapper_line(vis,
         - Make a dirty image cube
         - Estimate the rms noise in the dirty image cube in line free channels
             (makes a mask to do this if one does not already exist)
-        - Clean cautiously down to a threshold of 3x the estimated rms noise,
+        - Clean cautiously down to a threshold of 4x the estimated rms noise,
             using frequent major cycles and a broad mask
         - Performs JvM correction and primary beam correction
         - Saves a csv of metrics used for imaging and attempts to save a
@@ -142,7 +142,7 @@ def tclean_wrapper_line(vis,
     print("Dirty image complete, estimating rms noise in the dirty image...")
     rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0] # 'start' params give buffer of 20 channels before emission begins
     print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
-    threshold   = "%.8f" %(3.*rms*1e3)+'mJy'
+    threshold   = "%.8f" %(4.*rms*1e3)+'mJy'
 
 
     # if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
@@ -260,31 +260,12 @@ def tclean_wrapper_line(vis,
                            usemask                = 'pb',             # use a broad mask
                            pbmask                 = 0.2,              # use a broad mask
 
-                           cycleniter             = 300,
+                           cycleniter             = 100,              # previously 300; Maximum number of minor-cycle iterations (per plane) before triggering a major cycle
                            cyclefactor            = 3.0,              # 3x max_psf_sidelobe_level as minor cycle threshold (default is 1.0)
                            gain                   = 0.02)             # assign clean component peaks to 2% of pixel value (default is 0.1)
 
                            # fullsummary            = True)             # attempt to access the summary dictionary
 
-                           # Keplerian mask:
-                           # mask                   = imagename.replace('.clean', '.dirty.mask.image',))
-
-                           # Use broad initial mask (the one used for noise estimation):
-                           # mask                   = imagename+'.mask',
-                           # usemask                = 'user',
-                           # restart                = True,
-                           # calcres                = False,
-                           # calcpsf                = False,
-
-                           # Automasking Parameters below this line
-                           # usemask           = 'auto-multithresh',
-                           # sidelobethreshold = 2.0,    #          Table of Standard values: 12m (long) b75>300m = 3.0   # changed: 2.0
-                           # noisethreshold    = 4.0,    #          Table of Standard values: 12m (long) b75>300m = 5.0   # changed: 4.0
-                           # lownoisethreshold = 1.5,    #          Table of Standard values: 12m (long) b75>300m = 1.5
-                           # minbeamfrac       = 0.3,    #          Table of Standard values: 12m (long) b75>300m = 0.3
-                           # growiterations    = 75,     #          controls the maximum number of iterations that binary dilation performs. A value between 75 and 100 is usually adequate.
-                           # negativethreshold = 7.0,    #          Table of Standard values: 12m (long) b75>300m = 7.0
-                           # verbose           = True)
 
     print("Saving summary log file of tcleaning process...")
     np.save(imagename+'.tclean.summary.npy', rec)
@@ -346,8 +327,8 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['13CO']# note v6 not implemented in dict_lines
-vres_version    = 'v6' # 8-Mar-2023
+molecules       = ['13CO']# note v7 not implemented in dict_lines
+vres_version    = 'v7' # 10-Mar-2023
 
 for line in molecules:
     for robust in [0.5]:
