@@ -58,7 +58,7 @@ def tclean_wrapper_line(vis,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v7',
+                        vres_version='v8',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -67,7 +67,7 @@ def tclean_wrapper_line(vis,
         - Make a dirty image cube
         - Estimate the rms noise in the dirty image cube in line free channels
             (makes a mask to do this if one does not already exist)
-        - Clean cautiously down to a threshold of 4x the estimated rms noise,
+        - Clean cautiously down to a threshold of 5x the estimated rms noise,
             using frequent major cycles and a broad mask
         - Performs JvM correction and primary beam correction
         - Saves a csv of metrics used for imaging and attempts to save a
@@ -94,7 +94,7 @@ def tclean_wrapper_line(vis,
 
     imsize      = 2048,                  # to image to FWHM of primary beam; FOV 40 arcsec (diameter)
     cell        = '0.02arcsec',          # samples bmin ~9 times
-    scales      = [1, 5, 15, 30, 50,100] # x0.02arcsec = 0.02, 0.1, 0.3, 0.6, 1., 2. arcsec
+    scales      = [1, 5, 15, 30, 50] # x0.02arcsec = 0.02, 0.1, 0.3, 0.6, 1. arcsec
     # Dec 2022: scales  = [0, 5, 15, 25] # x0.04arcsec = 0, 0.2, 0.6, 1. arcsec
             # MAPS scales: [0, 5, 15, 25] x0.02arcsec = 0., 0.1, 0.3, 0.5 arcsec
                     # MAPS Huang on GM Aur: [0, 0.4, 1, 2] arcsec
@@ -142,7 +142,7 @@ def tclean_wrapper_line(vis,
     print("Dirty image complete, estimating rms noise in the dirty image...")
     rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0] # 'start' params give buffer of 20 channels before emission begins
     print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
-    threshold   = "%.8f" %(4.*rms*1e3)+'mJy'
+    threshold   = "%.8f" %(5.*rms*1e3)+'mJy'
 
 
     # if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
@@ -328,7 +328,7 @@ def tclean_wrapper_line(vis,
 """
 
 molecules       = ['13CO']# note v7 not implemented in dict_lines
-vres_version    = 'v7' # 10-Mar-2023
+vres_version    = 'v8' # 11-Mar-2023
 
 for line in molecules:
     for robust in [0.5]:
