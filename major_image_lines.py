@@ -58,7 +58,7 @@ def tclean_wrapper_line(vis,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v8',
+                        vres_version='v9',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -94,7 +94,7 @@ def tclean_wrapper_line(vis,
 
     imsize      = 2048,                  # to image to FWHM of primary beam; FOV 40 arcsec (diameter)
     cell        = '0.02arcsec',          # samples bmin ~9 times
-    scales      = [1, 5, 15, 30, 50] # x0.02arcsec = 0.02, 0.1, 0.3, 0.6, 1. arcsec
+    scales      = [1, 5, 15, 30, 50, 100] # x0.02arcsec = 0.02, 0.1, 0.3, 0.6, 1., 2. arcsec
     # Dec 2022: scales  = [0, 5, 15, 25] # x0.04arcsec = 0, 0.2, 0.6, 1. arcsec
             # MAPS scales: [0, 5, 15, 25] x0.02arcsec = 0., 0.1, 0.3, 0.5 arcsec
                     # MAPS Huang on GM Aur: [0, 0.4, 1, 2] arcsec
@@ -328,7 +328,7 @@ def tclean_wrapper_line(vis,
 """
 
 molecules       = ['13CO']# note v7 not implemented in dict_lines
-vres_version    = 'v8' # 11-Mar-2023
+vres_version    = 'v9' # 13-Mar-2023
 
 for line in molecules:
     for robust in [0.5]:
