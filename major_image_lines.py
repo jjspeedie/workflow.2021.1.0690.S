@@ -58,7 +58,7 @@ def tclean_wrapper_line(vis,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v10',
+                        vres_version='v8',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -67,7 +67,7 @@ def tclean_wrapper_line(vis,
         - Make a dirty image cube
         - Estimate the rms noise in the dirty image cube in line free channels
             (makes a mask to do this if one does not already exist)
-        - Clean cautiously down to a threshold of 4x the estimated rms noise,
+        - Clean cautiously down to a threshold of 5x the estimated rms noise,
             using frequent major cycles and a broad mask
         - Performs JvM correction and primary beam correction
         - Saves a csv of metrics used for imaging and attempts to save a
@@ -142,7 +142,7 @@ def tclean_wrapper_line(vis,
     print("Dirty image complete, estimating rms noise in the dirty image...")
     rms = casatasks.imstat(imagename=imagename+'.image', chans='0~9')['rms'][0] # 'start' params give buffer of 20 channels before emission begins
     print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
-    threshold   = "%.8f" %(4.*rms*1e3)+'mJy'
+    threshold   = "%.8f" %(5.*rms*1e3)+'mJy'
 
 
     # if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
@@ -260,11 +260,13 @@ def tclean_wrapper_line(vis,
                            usemask                = 'pb',             # use a broad mask
                            pbmask                 = 0.2,              # use a broad mask
 
-                           cycleniter             = 100,              # previously 300; Maximum number of minor-cycle iterations (per plane) before triggering a major cycle
-                           cyclefactor            = 3.0,              # 3x max_psf_sidelobe_level as minor cycle threshold (default is 1.0)
-                           gain                   = 0.02)             # assign clean component peaks to 2% of pixel value (default is 0.1)
+                           # Cautious/conservative clean:
+                           cycleniter             = 20,               # Jess: previously 300, then 100; Maximum number of minor-cycle iterations (per plane) before triggering a major cycle
+                           cyclefactor            = 3.0,              # Ryan: 3x max_psf_sidelobe_level as minor cycle threshold (default is 1.0)
+                           gain                   = 0.02,             # Ryan: assign clean component peaks to 2% of pixel value (default is 0.1)
+                           minpsffraction         = 0.5)              # PHANGS: cycle threshold is never lower than 0.5 times the peak residual (default: 0.05)
 
-                           # fullsummary            = True)             # attempt to access the summary dictionary
+                           # fullsummary            = True)           # attempt to access the summary dictionary
 
 
     print("Saving summary log file of tcleaning process...")
