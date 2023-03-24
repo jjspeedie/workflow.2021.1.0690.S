@@ -329,8 +329,8 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['13CO']# note v7 not implemented in dict_lines
-vres_version    = 'v10' # 16-Mar-2023
+molecules       = ['13CO', 'C18O', 'SO', '12CO']
+vres_version    = 'v11' # 24-Mar-2023
 
 for line in molecules:
     for robust in [0.5]:
