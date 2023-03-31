@@ -410,7 +410,7 @@ def _save_as_image_keplerian(image, mask, overwrite=True):
     ia.open(image)
     coord_sys = ia.coordsys().torecord()
     ia.close()
-    outfile = _trim_name(image).replace('.image', '.initial_mask_keplerian.image')
+    outfile = _trim_name(image).replace('.image', '.keplerian_mask.image')
     print('outfile: ', outfile)
     if overwrite:
         ctk.rmtables(outfile)
@@ -621,7 +621,7 @@ def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=
               estimate_rms=True, max_dzr=0.2, export_FITS=False,
               cont_image=None):
     """
-    Jess: Only changes are to save the mask as .initial_mask_keplerian
+    Jess: Only changes are to save the mask as .keplerian_mask
     Make a Keplerian mask for CLEANing.
     Args:
         image (str): Path to the image file to make the mask for.
@@ -674,6 +674,7 @@ def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=
     dvchan = 0.5 * abs(np.diff(v_axis).mean())
 
     # Define the rest frequencies and cycle through them.
+    print('Defining rest frequencies and cycling through them...')
     mask = None
     zr_list = _make_zr_list(zr, max_dzr) if z_func is None else [-1., 0., 1.]
     for offset in _get_offsets(image, restfreqs):
@@ -690,16 +691,19 @@ def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=
                 mask = np.where(np.logical_or(mask, tmp_mask), 1.0, 0.0)
 
     # Save it as a mask. Again, clunky but it works.
+    print('Saving as an image...')
     _save_as_image_keplerian(image, mask)
     if (nbeams is not None) or (target_res is not None):
-        _convolve_image(image, image.replace('.image', '.initial_mask_keplerian.image'),
+        _convolve_image(image, image.replace('.image', '.keplerian_mask.image'),
                         nbeams=nbeams, target_res=target_res)
-    _save_as_mask(image.replace('.image', '.initial_mask_keplerian.image'), tolerance)
+    print('Saving as a mask...')
+    _save_as_mask(image.replace('.image', '.keplerian_mask.image'), tolerance)
     if cont_image:
-        _combine_with_cont(image.replace('.image', '.initial_mask_keplerian.image'), cont_image)
-    mask = image.replace('.image', '.initial_mask_keplerian.image')
+        _combine_with_cont(image.replace('.image', '.keplerian_mask.image'), cont_image)
+    mask = image.replace('.image', '.keplerian_mask.image')
 
     # Export as a FITS file if requested.
+    print('Exporting to fits...')
     if export_FITS:
         ctk.exportfits(imagename=mask, fitsimage=mask.replace('.image', '.fits'),
                    dropstokes=True)

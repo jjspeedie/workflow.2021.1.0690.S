@@ -58,7 +58,7 @@ def tclean_wrapper_line(vis,
                         imsize=None,
                         cellsize=None,
                         robust=0.5,
-                        vres_version='v8',
+                        vres_version='v11',
                         uvtaper=[]):
     """
     Master tclean wrapper function to image a line.
@@ -329,11 +329,11 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['13CO', 'C18O', 'SO', '12CO']
+molecules       = ['13CO', 'C18O', 'SO']#, '12CO']
 vres_version    = 'v11' # 24-Mar-2023
 
 for line in molecules:
-    for robust in [0.5]:
+    for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
