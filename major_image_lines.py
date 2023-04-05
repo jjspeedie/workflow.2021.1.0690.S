@@ -263,7 +263,7 @@ def tclean_wrapper_line(vis,
                            pbmask                 = 0.2,              # use a broad mask
 
                            # Cautious/conservative clean:
-                           cycleniter             = 40,               # Jess: previously 300, then 100, then 20; Maximum number of minor-cycle iterations (per plane) before triggering a major cycle
+                           cycleniter             = 80,               # Jess: previously 300, then 100, then 20; Maximum number of minor-cycle iterations (per plane) before triggering a major cycle
                            cyclefactor            = 3.0,              # Ryan: 3x max_psf_sidelobe_level as minor cycle threshold (default is 1.0)
                            gain                   = 0.02,             # Ryan: assign clean component peaks to 2% of pixel value (default is 0.1)
                            minpsffraction         = 0.5)              # PHANGS: cycle threshold is never lower than 0.5 times the peak residual (default: 0.05)
@@ -335,7 +335,7 @@ molecules       = ['12CO']#'13CO', 'C18O', 'SO']#, '12CO']
 vres_version    = 'v11' # 24-Mar-2023
 
 for line in molecules:
-    for robust in [0.5]:
+    for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
