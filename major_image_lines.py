@@ -335,7 +335,7 @@ molecules       = ['12CO']#'13CO', 'C18O', 'SO']#, '12CO']
 vres_version    = 'v11' # 24-Mar-2023
 
 for line in molecules:
-    for robust in [1.5]:
+    for robust in [0.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             vis             = ddata.data_dict[line+cont]
