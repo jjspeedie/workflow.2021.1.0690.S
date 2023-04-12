@@ -74,10 +74,13 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
         - Saves csv of key metrics used during the cleaning process
         - Saves csv of key metrics of the created images
     """
-    tclean_rm_extensions    = ['.image', '.mask', '.model', '.pb', '.psf', '.residual', '.sumwt']
-    tclean_sv_extensions    = ['.model', '.pb', '.psf', '.residual']
-    JvM_extensions          = ['.image','.JvMcorr.image','.JvMcorr_lowres.image']
-    JvM_pbcor_extensions    = [ext+'.pbcor' for ext in JvM_extensions]
+    tclean_rm_extensions          = ['.image', '.mask', '.model', '.pb', '.psf', '.residual', '.sumwt']
+    tclean_sv_dirty_extensions    = ['.image', '.psf']
+    tclean_rm_dirty_extensions    = ['.residual', '.model', '.pb', '.sumwt']
+    tclean_sv_clean_extensions    = ['.residual', '.psf', '.model'] #  .image and .JvM_convolved_model will be added to this
+    tclean_rm_clean_extensions    = ['.sumwt']
+    JvM_extensions                = ['.image','.JvMcorr.image','.JvMcorr_lowres.image']
+    JvM_pbcor_extensions          = [ext+'.pbcor' for ext in JvM_extensions]
 
 
     """ Make a dirty image for determining the cleaning threshold """
@@ -110,13 +113,15 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
                      uvtaper          = uvtaper,
                      savemodel        = 'none')
 
-    for ext in tclean_sv_extensions+['.image']:
-        os.system('rm -rf '+ imagename+ext+'.fits')
-        exportfits(imagename+ext, imagename+ext+'.fits',
-                   dropstokes=True, overwrite=True)
+    print("Exporting dirty image products of the "+line+" line to FITS...")
+    for ext in tclean_sv_dirty_extensions:
+        exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
+    for ext in tclean_rm_dirty_extensions:
+        print('(Space saving) Deleting this dirty file: ', imagename+ext)
+        os.system('rm -rf '+ imagename+ext)
 
     rms         = estimate_rms(imagename=imagename+'.image', region=region)
-    threshold   = "%.8f" %(4.*rms/1e3)+'mJy'
+    threshold   = "%.8f" %(2.*rms/1e3)+'mJy'
 
     """ Clean down to the cleaning threshold """
     imagename = imagename.replace('.dirty', '.clean')
@@ -148,15 +153,17 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
                              savemodel        = 'none')#,
                              # fullsummary      = True) # This is an unexpected keyword argument...?!
 
-    print(" ******* Full summary *******")
+    print("Saving summary log file of tcleaning process...")
+    np.save(imagename+'.tclean.summary.npy', rec)
     print(rec)
-    with open(imagename+'_fullsummary.pkl', 'wb') as f:
-        pickle.dump(rec, f)
 
-    for ext in tclean_sv_extensions:
-        os.system('rm -rf '+ imagename+ext+'.fits')
-        exportfits(imagename+ext, imagename+ext+'.fits',
-                   dropstokes=True, overwrite=True)
+    print("Exporting clean image products of the "+line+" line to FITS...")
+    for ext in tclean_sv_clean_extensions:
+        exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
+    for ext in tclean_rm_clean_extensions:
+        print('(Space saving) Deleting this clean file: ', imagename+ext)
+        os.system('rm -rf '+ imagename+ext)
+        
 
     """ Do JvM correction (primary beam correction done concurrently) """
 
