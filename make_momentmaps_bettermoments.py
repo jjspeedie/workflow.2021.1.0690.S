@@ -1,3 +1,18 @@
+# Run this script in a virtual environment, made with the following:
+# python3 -m venv modularcasa
+# source modularcasa/bin/activate
+# (modularcasa) pip install bettermoments
+'''
+ALMA Program ID: 2021.1.00690.S (PI: R. Dong)
+reducer: J. Speedie
+
+Script to make moment maps using Rich Teague's bettermoments.
+
+To run this script, do:
+source modularcasa/bin/activate
+(modularcasa) python make_momentmaps_bettermoments.py
+'''
+
 import sys, os
 import numpy as np
 import bettermoments as bm
