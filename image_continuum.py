@@ -113,7 +113,7 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
                      uvtaper          = uvtaper,
                      savemodel        = 'none')
 
-    print("Exporting dirty image products of the "+line+" line to FITS...")
+    print("Exporting dirty image products of the continuum to FITS...")
     for ext in tclean_sv_dirty_extensions:
         exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
     for ext in tclean_rm_dirty_extensions:
@@ -157,13 +157,13 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
     np.save(imagename+'.tclean.summary.npy', rec)
     print(rec)
 
-    print("Exporting clean image products of the "+line+" line to FITS...")
+    print("Exporting clean image products of the continuum to FITS...")
     for ext in tclean_sv_clean_extensions:
         exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
     for ext in tclean_rm_clean_extensions:
         print('(Space saving) Deleting this clean file: ', imagename+ext)
         os.system('rm -rf '+ imagename+ext)
-        
+
 
     """ Do JvM correction (primary beam correction done concurrently) """
 
@@ -218,7 +218,7 @@ def tclean_wrapper_continuum(vis, imagename, mask='', region='', imsize=None,
 ######################################################
 """
 
-for robust in [0.5]:#, 1.0, 1.5]:
+for robust in [0.5, 1.0, 1.5]:
     vis             = ddata.data_dict['continuum']
     mask            = dmask.mask_dict['continuum']['circle mask']
     region          = dmask.mask_dict['continuum']['noise annulus']
