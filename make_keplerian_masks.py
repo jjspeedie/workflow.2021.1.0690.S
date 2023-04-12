@@ -9,6 +9,7 @@
 # (modularcasa) pip install astropy
 # (modularcasa) pip install shutils
 # (modularcasa) pip install pandas
+# (modularcasa) pip install astropy
 '''
 ALMA Program ID: 2021.1.00690.S (PI: R. Dong)
 reducer: J. Speedie
@@ -36,6 +37,7 @@ import dictionary_lines as dlines # contains line_dict
 
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_keplerian_mask
+from astropy.io import fits
 
 def get_kep_mask_wrapper(vis,
                         imagename,
@@ -52,16 +54,23 @@ def get_kep_mask_wrapper(vis,
     imagename +='.clean'
     linefreq   = dlines.line_dict[line]['freq']
 
-    make_keplerian_mask(image           = imagename+'.image',
-                        inc             = ddisk.disk_dict['incl'],
-                        PA              = ddisk.disk_dict['PA_gofish'],
-                        mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-                        dist            = ddisk.disk_dict['distance'],
-                        vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-                        restfreqs       = linefreq,
-                        export_FITS     = True,
-                        estimate_rms    = False,
-                        **dmask.mask_dict[line+'_keplerian'])
+    # make_keplerian_mask(image           = imagename+'.image',
+    #                     inc             = ddisk.disk_dict['incl'],
+    #                     PA              = ddisk.disk_dict['PA_gofish'],
+    #                     mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
+    #                     dist            = ddisk.disk_dict['distance'],
+    #                     vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
+    #                     restfreqs       = linefreq,
+    #                     export_FITS     = True,
+    #                     estimate_rms    = False,
+    #                     **dmask.mask_dict[line+'_keplerian'])
+
+    # Create a second mask that has ones where the Keplerian mask has zeros, and vice versa
+    hdul = fits.open(imagename+'.keplerian_mask.fits')
+    hdul[0].data -= 1.
+    hdul[0].data = np.abs(hdul[0].data)
+    hdul.writeto(imagename+'.anti_keplerian_mask.fits')
+    hdul.close()
 
 
 
