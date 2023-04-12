@@ -1,4 +1,5 @@
 import sys, os
+import numpy as np
 import bettermoments as bm
 import dictionary_data as ddata # contains data_dict
 
@@ -14,6 +15,7 @@ for robust in robusts:
     for ext in extensions:
         for molecule in molecules:
             filename = ddata.data_dict['NRAO_path']+'images_lines/'+molecule+'/'+vres_version+'_'+robust+'/ABAur_'+molecule+'.clean'+ext
+            print('Working on '+robust+', '+ext+', '+molecule+'...')
 
             data, velax = bm.load_cube(filename+'.fits')
 
