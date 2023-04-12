@@ -13,7 +13,7 @@ polyorder = 0   # doesn't really seem to make a difference when vres is 41 or 82
 for robust in robusts:
     for ext in extensions:
         for molecule in molecules:
-            filename = ddata.data_dict['NRAO_path']+'images_lines/'+molecule+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+molecule+'.clean'+ext
+            filename = ddata.data_dict['NRAO_path']+'images_lines/'+molecule+'/'+vres_version+'_'+robust+'/ABAur_'+molecule+'.clean'+ext
 
             data, velax = bm.load_cube(filename+'.fits')
 
