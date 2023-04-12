@@ -75,7 +75,7 @@ molecules       = ['12CO']#'13CO', 'SO', '12CO']
 vres_version    = '' # REMOVED _ FROM ROBUST PREFIX AND ADDED 'DECEMBER' - PUT IT BACK
 
 for line in molecules:
-    for robust in [0.5]:
+    for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'robust'+str(robust)+'_december'+cont)
             vis             = ddata.data_dict[line+cont]
