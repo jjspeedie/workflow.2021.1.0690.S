@@ -19,8 +19,8 @@ import bettermoments as bm
 import dictionary_data as ddata # contains data_dict
 
 extensions = ['.JvMcorr.image', '.JvMcorr.image.pbcor']#'.image', '.image.pbcor', '.JvMcorr_lowres.image', '.JvMcorr_lowres.image.pbcor' ]
-molecules  = ['SO', 'C18O', '13CO']#, '12CO','
-robusts    = ['robust0.5', 'robust1.5']
+molecules  = ['12CO']#'SO', 'C18O', '13CO']
+robusts    = ['robust1.5']#'robust0.5', 
 vres_version = 'v11'
 
 smooth = 0      # doesn't really seem to make a difference when vres is 41 or 82 m/s
