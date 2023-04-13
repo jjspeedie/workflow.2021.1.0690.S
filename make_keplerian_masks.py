@@ -39,8 +39,7 @@ from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_keplerian_mask
 from astropy.io import fits
 
-def get_kep_mask_wrapper(vis,
-                        imagename,
+def get_kep_mask_wrapper(imagename,
                         # maskname,
                         line,
                         imsize=None,
@@ -54,16 +53,16 @@ def get_kep_mask_wrapper(vis,
     imagename +='.clean'
     linefreq   = dlines.line_dict[line]['freq']
 
-    # make_keplerian_mask(image           = imagename+'.image',
-    #                     inc             = ddisk.disk_dict['incl'],
-    #                     PA              = ddisk.disk_dict['PA_gofish'],
-    #                     mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-    #                     dist            = ddisk.disk_dict['distance'],
-    #                     vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-    #                     restfreqs       = linefreq,
-    #                     export_FITS     = True,
-    #                     estimate_rms    = False,
-    #                     **dmask.mask_dict[line+'_keplerian'])
+    make_keplerian_mask(image           = imagename+'.image',
+                        inc             = ddisk.disk_dict['incl'],
+                        PA              = ddisk.disk_dict['PA_gofish'],
+                        mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
+                        dist            = ddisk.disk_dict['distance'],
+                        vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
+                        restfreqs       = linefreq,
+                        export_FITS     = True,
+                        estimate_rms    = False,
+                        **dmask.mask_dict[line+'_keplerian'])
 
     # Create a second mask that has ones where the Keplerian mask has zeros, and vice versa
     hdul = fits.open(imagename+'.keplerian_mask.fits')
@@ -87,19 +86,15 @@ for line in molecules:
     for robust in [1.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
-            vis             = ddata.data_dict[line+cont]
-            robust          = robust
             imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line
 
             print("################################################")
-            print("###### About to start imaging measurement set: ", vis)
             print("###### Creating files whose names will start with: ", imagename)
             print("###### Image cubes will have spectral resolution defined by version: ", vres_version)
             print("###### And Briggs robust weighting: ", robust)
             print("################################################")
 
-            get_kep_mask_wrapper(vis           = vis,
-                                imagename      = imagename,
+            get_kep_mask_wrapper(imagename     = imagename,
                                 line           = line,
                                 robust         = robust,
                                 vres_version   = vres_version,

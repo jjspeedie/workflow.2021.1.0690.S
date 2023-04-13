@@ -26,7 +26,11 @@ line_dict['12CO'] = {'qn'    : '2-1',                # Transition
                      # Spectral resolution for imaging (forcing major cycles), version 11 (23-Mar-2023): like v8 but cycleniter=20, minpsffraction=0.5
                      'v11_nchan' : 302,
                      'v11_start' : '-0.198km/s',
-                     'v11_width' : '0.042km/s'
+                     'v11_width' : '0.042km/s',
+                     # Spectral resolution for imaging (forcing major cycles), version 12 (12-Apr-2023): to be paired with robust=0
+                     'v12_nchan' : 151,
+                     'v12_start' : '-0.198km/s',
+                     'v12_width' : '0.084km/s'
                     }
 
 line_dict['13CO'] = {'qn'    : '2-1',                # Transition
@@ -76,7 +80,11 @@ line_dict['13CO'] = {'qn'    : '2-1',                # Transition
                      # Spectral resolution for imaging (forcing major cycles), version 11 (23-Mar-2023): like v8 but cycleniter=20, minpsffraction=0.5
                      'v11_nchan' : 186,
                      'v11_start' : '2.070km/s',
-                     'v11_width' : '0.042km/s'
+                     'v11_width' : '0.042km/s',
+                     # Spectral resolution for imaging (forcing major cycles), version 12 (12-Apr-2023): to be paired with robust=0
+                     'v12_nchan' : 93,
+                     'v12_start' : '2.070km/s',
+                     'v12_width' : '0.084km/s'
                     }
 
 line_dict['C18O'] = {'qn'    : '2-1',                 # Transition
