@@ -10,7 +10,7 @@ Script to make moment maps using Rich Teague's bettermoments.
 
 To run this script, do:
 source modularcasa/bin/activate
-(modularcasa) python make_momentmaps_bettermoments.py
+(modularcasa) python make_momentmaps_bettermoments_masked.py
 '''
 
 import sys, os
@@ -20,8 +20,8 @@ import dictionary_data as ddata # contains data_dict
 
 extensions = ['.JvMcorr.image', '.JvMcorr.image.pbcor']#'.image', '.image.pbcor', '.JvMcorr_lowres.image', '.JvMcorr_lowres.image.pbcor' ]
 molecules  = ['12CO']
-robusts    = ['robust1.5']#, 'robust0.5']
-vres_version = 'v11'
+robusts    = ['robust0.0']#, 'robust0.5']
+vres_version = 'v12'
 masks = ['keplerian_mask', 'anti_keplerian_mask']
 
 smooth = 0      # doesn't really seem to make a difference when vres is 41 or 82 m/s

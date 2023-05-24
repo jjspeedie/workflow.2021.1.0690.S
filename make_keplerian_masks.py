@@ -80,10 +80,10 @@ def get_kep_mask_wrapper(imagename,
 """
 
 molecules       = ['12CO']#'13CO', 'SO', '12CO']
-vres_version    = 'v11'
+vres_version    = 'v12'
 
 for line in molecules:
-    for robust in [1.5]:
+    for robust in [0.0]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line

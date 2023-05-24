@@ -19,8 +19,8 @@ import bettermoments as bm
 import dictionary_data as ddata # contains data_dict
 
 extensions = ['.JvMcorr.image', '.JvMcorr.image.pbcor']#'.image', '.image.pbcor', '.JvMcorr_lowres.image', '.JvMcorr_lowres.image.pbcor' ]
-molecules  = ['SO', 'C18O', '13CO']#'12CO']#
-robusts    = ['robust1.5', 'robust0.5']
+molecules  = ['12CO']#'12CO']#
+robusts    = ['robust0.5']#, 'robust0.5']
 vres_version = 'v11'
 
 smooth = 0      # doesn't really seem to make a difference when vres is 41 or 82 m/s
@@ -57,8 +57,8 @@ for robust in robusts:
 
             # Mask along the velocity axis
             channel_mask = bm.get_channel_mask(data=data,
-                                              firstchannel=0, # we don't include first 10 channels
-                                              lastchannel=-1) # we don't include last 10 channels
+                                              firstchannel=10, # we don't include first 10 channels
+                                              lastchannel=-10) # we don't include last 10 channels
 
             # Mask combination
             mask = bm.get_combined_mask(user_mask=user_mask,
@@ -88,8 +88,14 @@ for robust in robusts:
             moments = bm.collapse_quadratic(velax=velax, data=masked_data, rms=rms)
             bm.save_to_FITS(moments=moments, method='quadratic', path=filename+'.fits')
             # makes Fnu, dFnu, v0, and dv0
+            # print('Making Gaussian moment...')
+            # moments = bm.collapse_gaussian(velax=velax, data=masked_data, rms=rms, chunks=1000)
+            # bm.save_to_FITS(moments=moments, method='gaussian', path=filename+'.fits')
+            # # makes gFnu, dgFnu, gv0, dgv0, gdV and dgdV
 
-            bm_exts = ['_M0', '_dM0', '_M1', '_dM1', '_M2', '_dM2', '_M9', '_dM9', '_Fnu', '_dFnu', '_v0', '_dv0']
+
+            bm_exts = ['_gFnu', '_dgFnu', '_gv0', '_dgv0', '_gdV', '_dgdV']
+            # bm_exts = ['_M0', '_dM0', '_M1', '_dM1', '_M2', '_dM2', '_M9', '_dM9', '_Fnu', '_dFnu', '_v0', '_dv0']
             for bm_ext in bm_exts:
                 os.system('mv '+filename+bm_ext+'.fits '+savedir)
 
