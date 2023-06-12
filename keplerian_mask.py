@@ -403,14 +403,14 @@ def _save_as_image_for_diffuse_emission(image, mask, overwrite=True):
     ia.fromarray(pixels=mask, outfile=outfile, csys=coord_sys)
     ia.close()
 
-def _save_as_image_keplerian(image, mask, overwrite=True):
+def _save_as_image_keplerian(image, mask, tag='.keplerian_mask', overwrite=True):
     """Identical to _save_as_image, but with a different suffix for the mask name.
     Save as an image by copying the header info from 'image'."""
     print('image: ', image)
     ia.open(image)
     coord_sys = ia.coordsys().torecord()
     ia.close()
-    outfile = _trim_name(image).replace('.image', '.keplerian_mask.image')
+    outfile = _trim_name(image).replace('.image', tag+'.image')
     print('outfile: ', outfile)
     if overwrite:
         ctk.rmtables(outfile)
@@ -618,10 +618,10 @@ def make_mask_for_diffuse_emission(image, inc, PA, dist, mstar, vlsr, dx0=0.0, d
 def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=0.0,
               z_func=None, dV0=300.0, dVq=-0.5, r_min=0.0, r_max=4.0,
               nbeams=None, target_res=None, tolerance=0.01, restfreqs=None,
-              estimate_rms=True, max_dzr=0.2, export_FITS=False,
+              estimate_rms=True, max_dzr=0.2, export_FITS=False, tag='.keplerian_mask',
               cont_image=None):
     """
-    Jess: Only changes are to save the mask as .keplerian_mask
+    Jess: Only changes are to save the mask as .keplerian_mask (tag).
     Make a Keplerian mask for CLEANing.
     Args:
         image (str): Path to the image file to make the mask for.
@@ -692,15 +692,15 @@ def make_keplerian_mask(image, inc, PA, dist, mstar, vlsr, dx0=0.0, dy0=0.0, zr=
 
     # Save it as a mask. Again, clunky but it works.
     print('Saving as an image...')
-    _save_as_image_keplerian(image, mask)
+    _save_as_image_keplerian(image, mask, tag)
     if (nbeams is not None) or (target_res is not None):
-        _convolve_image(image, image.replace('.image', '.keplerian_mask.image'),
+        _convolve_image(image, image.replace('.image', tag+'.image'),
                         nbeams=nbeams, target_res=target_res)
     print('Saving as a mask...')
-    _save_as_mask(image.replace('.image', '.keplerian_mask.image'), tolerance)
+    _save_as_mask(image.replace('.image', tag+'.image'), tolerance)
     if cont_image:
-        _combine_with_cont(image.replace('.image', '.keplerian_mask.image'), cont_image)
-    mask = image.replace('.image', '.keplerian_mask.image')
+        _combine_with_cont(image.replace('.image', tag+'.image'), cont_image)
+    mask = image.replace('.image', tag+'.image')
 
     # Export as a FITS file if requested.
     print('Exporting to fits...')

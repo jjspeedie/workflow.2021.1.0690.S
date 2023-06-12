@@ -38,6 +38,7 @@ import dictionary_lines as dlines # contains line_dict
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_keplerian_mask
 from astropy.io import fits
+from scipy.ndimage import gaussian_filter
 
 def get_kep_mask_wrapper(imagename,
                         # maskname,
@@ -46,6 +47,10 @@ def get_kep_mask_wrapper(imagename,
                         cellsize=None,
                         robust=0.5,
                         vres_version='v11',
+                        tag='.keplerian_mask',
+                        anti_tag='.anti_keplerian_mask',
+                        smooth_tag='.smooth_keplerian_mask',
+                        sigma_channels=5,
                         uvtaper=[]):
     """
     """
@@ -62,13 +67,24 @@ def get_kep_mask_wrapper(imagename,
                         restfreqs       = linefreq,
                         export_FITS     = True,
                         estimate_rms    = False,
+                        tag             = tag,
                         **dmask.mask_dict[line+'_keplerian'])
 
     # Create a second mask that has ones where the Keplerian mask has zeros, and vice versa
-    hdul = fits.open(imagename+'.keplerian_mask.fits')
+    hdul = fits.open(imagename+tag+'.fits')
     hdul[0].data -= 1.
     hdul[0].data = np.abs(hdul[0].data)
-    hdul.writeto(imagename+'.anti_keplerian_mask.fits')
+    hdul.writeto(imagename+anti_tag+'.fits')
+    hdul.close() # Does not over-write tag.fits data
+
+    # Create a third mask that is smoothed along the spectral axis (to get rid of streaks in moment maps)
+    hdul = fits.open(imagename+tag+'.fits') # Opens original tag.fits data
+    # Perform the spectral smoothing; clunky but it works
+    for y_ind in np.arange(0, hdul[0].data.shape[1], 1):
+        hdul[0].data[:, y_ind, :] = gaussian_filter(hdul[0].data[:, y_ind, :], sigma=sigma_channels)
+    for x_ind in np.arange(0, hdul[0].data.shape[2], 1):
+        hdul[0].data[:, :, x_ind] = gaussian_filter(hdul[0].data[:, :, x_ind], sigma=sigma_channels)
+    hdul.writeto(imagename+smooth_tag+'.fits')
     hdul.close()
 
 
@@ -80,10 +96,12 @@ def get_kep_mask_wrapper(imagename,
 """
 
 molecules       = ['12CO']#'13CO', 'SO', '12CO']
-vres_version    = 'v12'
+vres_version    = 'v11'
+mask_version    = '_m8'
+sigma_channels  = 5
 
 for line in molecules:
-    for robust in [0.0]:
+    for robust in [0.5]:
         for cont in ['']:#, '_wcont']:
             os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
             imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line
@@ -98,5 +116,8 @@ for line in molecules:
                                 line           = line,
                                 robust         = robust,
                                 vres_version   = vres_version,
-                                # maskname       = maskname
+                                tag            = '.keplerian_mask'+mask_version,
+                                anti_tag       = '.anti_keplerian_mask'+mask_version,
+                                smooth_tag     = '.smooth_keplerian_mask'+mask_version,
+                                sigma_channels = sigma_channels
                                 )

@@ -32,7 +32,7 @@ mask_dict['13CO_keplerian'] = {'r_max': 10.0,          # Maximum radius in [arcs
                                'target_res': 1.0      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
                                }
 mask_dict['12CO_keplerian'] = {'r_max': 20.0,          # Maximum radius in [arcsec] of the mask.
-                               'dV0': 700.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
+                               'dV0': 250.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
                                'dVq': 0.0,           # The exponent of the power law describing the Doppler width as a function of radius.
                                'zr': 0.0,             # For elevated emission, the z/r value.
                                'target_res': None      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
@@ -72,6 +72,27 @@ mask_dict['12CO_keplerian'] = {'r_max': 20.0,          # Maximum radius in [arcs
 #                                'dVq': 0.0,           # The exponent of the power law describing the Doppler width as a function of radius.
 #                                'zr': 0.0,             # For elevated emission, the z/r value.
 #                                'target_res': 1.0      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
+#                                }
+# Keplerian mask version "", though it was the "final" version for all of April and May 2023, used with sigma_channels=0
+# mask_dict['12CO_keplerian'] = {'r_max': 20.0,          # Maximum radius in [arcsec] of the mask.
+#                                'dV0': 700.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
+#                                'dVq': 0.0,           # The exponent of the power law describing the Doppler width as a function of radius.
+#                                'zr': 0.0,             # For elevated emission, the z/r value.
+#                                'target_res': None      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
+#                                }
+# Keplerian mask version "m6" (should have been m7)
+# mask_dict['12CO_keplerian'] = {'r_max': 20.0,          # Maximum radius in [arcsec] of the mask.
+#                                'dV0': 500.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
+#                                'dVq': 0.0,           # The exponent of the power law describing the Doppler width as a function of radius.
+#                                'zr': 0.0,             # For elevated emission, the z/r value.
+#                                'target_res': None      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
+#                                }
+# Keplerian mask version "m7"
+# mask_dict['12CO_keplerian'] = {'r_max': 20.0,          # Maximum radius in [arcsec] of the mask.
+#                                'dV0': 400.0,          # The Doppler width of the line in [m/s] at 1 arcsec.
+#                                'dVq': 0.0,           # The exponent of the power law describing the Doppler width as a function of radius.
+#                                'zr': 0.0,             # For elevated emission, the z/r value.
+#                                'target_res': None      # Instead of scaling the CLEAN beam for the convolution kernel, specify the FWHM of the convolution kernel directly.
 #                                }
 
 # The following is for  kickstarting auto-multithresh to help it capture diffuse emission using make_mask_for_diffuse_emission() from keplerian_mask, which is a hack by Jess:
