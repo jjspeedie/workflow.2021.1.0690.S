@@ -8,7 +8,7 @@ When applicable/possible, I've tried to cite the *original* paper who found each
 
 disk_dict = {'name': 'AB Aur',
              'distance': 155.9403,                      # +/- 0.9045; source distance in pc, from Gaia DR3 archive calculated as 1000/(parallax), error as 1000*(error in p)/(p^2)
-             'incl': 23.2,                              # +/- ?; inclination in degrees, Huang et al. (2020) (from the dust)
+             'incl': 23.2,                              # +/- ?; inclination in degrees, Tang et al. (2017) (from the dust)
              'PA': 54.,                                 # +/- ?; position angle in degrees, Tang et al. (2017)
              'PA_gofish': 54. + 180.0,                  # +/- ?; position angle in degrees, corrected for gofish
              'M_star': 2.4,                             # +/- 0.2; stellar mass in solar masses, DeWarf et al. 2003, Herbertz et al. 1991
@@ -18,13 +18,21 @@ disk_dict = {'name': 'AB Aur',
              'L_star_98': 47, 				# +17/-10; stellar luminosity in solar luminosities, van den Ancker et al. 1998
              'L_star_92': 57, 				# +/- ?; stellar luminosity in solar luminosities, estimated from Hillenbrand et al. 1992
 
+             'R_star': 2.5, 				# +/- ?; stellar radius in solar radii, Li et al. (2016) Table 1 *NOTE THIS IS A PARAMETER VALUE THEY "collected from the literature"
+
              'T_eff_23': 9770, 				# +/- 100; effective temperature in Kelvin, estimated from spectral type, Currie et al. 2023
              'T_eff_01': 9500, 				# +/- ?; effective temperature in Kelvin, estimated from SED modeling, Natta et al. 2001
              'T_eff_92': 9772, 				# +/- ?; effective temperature in Kelvin, first reported by Hillenbrand 1992
 
              'v_sys': 5.85,                             # +/- 0.02; LSR systemic velocity [km/s], from Tang et al. (2012) outer regions (note 5.73 km/s for inner regions)
              'RA_phase_center': '04:55:45.854900',      # J2000 coordinates of LB1 phase center, to which all other EBs were aligned during reduction
-             'Dec_phase_center': '+30.33.03.73320'      # J2000 coordinates of LB1 phase center, to which all other EBs were aligned during reduction
+             'Dec_phase_center': '+30.33.03.73320',      # J2000 coordinates of LB1 phase center, to which all other EBs were aligned during reduction
+
+             'x0_eddy': -0.005,                         # +/- 0.007; disk center offset from phase center, fit with eddy to C18O (v11_robust0.5) 24/07/23
+             'y0_eddy': -0.017,                         # +/- 0.007; disk center offset from phase center, fit with eddy to C18O (v11_robust0.5) 24/07/23
+             'PA_eddy': 236.7,                          # +/- 0.3; position angle in degrees, NE to redshifted major axis, fit with eddy to C18O (v11_robust0.5) 24/07/23
+             'mstar_eddy': 2.23,                  	# +/- 0.02; stellar mass in solar masses, fit with eddy to C18O (v11_robust0.5) 24/07/23
+             'vlsr_eddy': 5858.                        # +/- 5.; LSR systemic velocity [m/s], fit with eddy to C18O (v11_robust0.5) 24/07/23
 }
 
 
