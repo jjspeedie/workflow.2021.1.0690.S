@@ -46,7 +46,6 @@ reducer: J. Speedie
 """ Starting matter """
 import os
 execfile('dictionary_data.py') # loads data_dict
-execfile('dictionary_disk.py') # loads disk_dict
 execfile('step1_utils.py') # loads multiple functions
 execfile('selfcal_utils.py') # necessary for an initial round of selfcal at the end
 

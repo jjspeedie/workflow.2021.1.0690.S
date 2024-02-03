@@ -46,7 +46,6 @@ spw31	CO_v=0_2-1
 """ Starting matter """
 import os
 execfile('dictionary_data.py') # loads data_dict
-execfile('dictionary_disk.py') # loads disk_dict
 execfile('selfcal_utils.py') # necessary for an initial round of selfcal at the end
 
 """

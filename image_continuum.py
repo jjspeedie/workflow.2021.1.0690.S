@@ -30,7 +30,6 @@ import casatasks
 from casatasks import impbcor
 from casatasks import exportfits
 import dictionary_data as ddata # contains data_dict
-# import dictionary_disk as ddisk # contains disk_dict
 import dictionary_mask as dmask # contains mask_dict
 from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 # from calc_uvtaper import calc_taper
