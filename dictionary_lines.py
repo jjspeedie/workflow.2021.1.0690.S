@@ -128,5 +128,9 @@ line_dict['SO']   = {'qn'    : '6(5)-5(4)',           # Transition
                      # Spectral resolution for imaging (forcing major cycles), version 11 (23-Mar-2023): like v8 but cycleniter=20, minpsffraction=0.5
                      'v11_nchan' : 60,
                      'v11_start' : '3.582km/s',
-                     'v11_width' : '0.084km/s'
+                     'v11_width' : '0.084km/s',
+                     # Spectral resolution for imaging (forcing major cycles), version 13 (27-Apr-2023): Purpose is to search for high red/blue shift AB Aur b
+                     'v13_nchan' : -1, # Default
+                     'v13_start' : '', # Default
+                     'v13_width' : ''  # Default
                     }
