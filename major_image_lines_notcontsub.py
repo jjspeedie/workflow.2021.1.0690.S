@@ -1,14 +1,17 @@
 # Run this script in a virtual environment, made with the following:
-# python3 -m venv modularcasa
-# source modularcasa/bin/activate
-# (modularcasa) pip install --upgrade pip wheel
-# (modularcasa) pip install casatasks==6.4.3.27
-# (modularcasa) pip install casatools==6.4.3.27
-# (modularcasa) pip install casadata==2022.9.5
-# (modularcasa) pip install numba
-# (modularcasa) pip install astropy
-# (modularcasa) pip install shutils
-# (modularcasa) pip install pandas
+# python3.8 -m venv modularcasa24 (2024 version due to following error)
+            ###   File "/usr/lib64/python3.6/importlib/__init__.py", line 126, in import_module
+            ###     return _bootstrap._gcd_import(name[level:], package, level)
+            ### ModuleNotFoundError: No module named '_synthesismaskhandler'
+# source modularcasa24/bin/activate
+# (modularcasa24) pip install --upgrade pip wheel
+# (modularcasa24) pip install casatasks==6.6.3.22
+# (modularcasa24) pip install casatools==6.6.3.22
+# (modularcasa24) pip install casadata==2024.1.15
+# (modularcasa24) pip install numba
+# (modularcasa24) pip install astropy
+# (modularcasa24) pip install shutils
+# (modularcasa24) pip install pandas
 '''
 ALMA Program ID: 2021.1.00690.S (PI: R. Dong)
 reducer: J. Speedie
@@ -20,15 +23,15 @@ major cycles, and clean with a broad mask.
 
 To run this script, do:
 source modularcasa/bin/activate
-(modularcasa) python major_image_lines.py
+(modularcasa24) python major_image_lines_notcontsub.py
 '''
 import os
 import sys
 import numpy as np
 import pandas as pd
-import casatools
-tb = casatools.table()
-ia = casatools.image()
+# import casatools
+# tb = casatools.table()
+# ia = casatools.image()
 import casatasks
 from casatasks import impbcor
 from casatasks import exportfits
@@ -45,11 +48,7 @@ from keplerian_mask import make_keplerian_mask
 from shutil import copytree
 # from shutil import rmtree
 
-# """Guidelines for optimizing auto-multithresh parameters:
-# Save the masks for each major cycle. To save the intermediate masks,
-# type the following on the casa command line:"""
-# os.environ['SAVE_ALL_AUTOMASKS']="true"
-#
+
 
 def tclean_wrapper_line(vis,
                         imagename,
@@ -147,91 +146,12 @@ def tclean_wrapper_line(vis,
     threshold   = "%.8f" %(5.*rms*1e3)+'mJy'
 
 
-    # if ((line=='12CO') | (line=='13CO') | (line=='C18O')):
-    #     print("The "+line+" line contains diffuse emission at central channels that auto-multithresh struggles to mask. We shall help it...")
-    #
-    #     print("Have you already made a mask for kickstarting auto-multithresh?")
-    #     initial_mask = maskname
-    #     if os.path.exists(initial_mask):
-    #         print('--> Yes, '+maskname+' already exists, and we will use it now...')
-    #     else:
-    #         print('--> No, '+maskname+' does not exist yet; so we have to exit.')
-    #         sys.exit()
-    #         # make_mask_for_diffuse_emission(image           = imagename+'.image',
-    #         #                                inc             = ddisk.disk_dict['incl'],
-    #         #                                PA              = ddisk.disk_dict['PA_gofish'],
-    #         #                                mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-    #         #                                dist            = ddisk.disk_dict['distance'],
-    #         #                                vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-    #         #                                v_min           = dmask.mask_dict[line+'_diffuse_emission']['v_min'], # in m/s
-    #         #                                v_max           = dmask.mask_dict[line+'_diffuse_emission']['v_max'], # in m/s
-    #         #                                r_max           = dmask.mask_dict[line+'_diffuse_emission']['r_max'], # in arcsec
-    #         #                                restfreqs       = linefreq,
-    #         #                                export_FITS     = True, # this could be false
-    #         #                                estimate_rms    = False) # this won't be an accurate estimate because there is emission outside the diffuse mask
-    #
-    # elif line=='SO': # make a keplerian_mask
-    #     print("The "+line+" line shall be initialized with a Keplerian mask...")
-    #
-    #     print("Have you already made a mask for kickstarting auto-multithresh with a keplerian mask?")
-    #     initial_mask = imagename+'.initial_mask_keplerian.image'
-    #     if os.path.exists(initial_mask):
-    #         print('--> Yes, initial_mask_keplerian.image already exists, and we will use it now...')
-    #     else:
-    #         print('--> No, initial_mask_keplerian.image does not exist yet; we are making it now...')
-    #         make_keplerian_mask(image           = imagename+'.image',
-    #                             inc             = ddisk.disk_dict['incl'],
-    #                             PA              = ddisk.disk_dict['PA_gofish'],
-    #                             mstar           = ddisk.disk_dict['M_star'], # ideally this would be dynamical, measured with gofish/eddy
-    #                             dist            = ddisk.disk_dict['distance'],
-    #                             vlsr            = ddisk.disk_dict['v_sys']*1000., # needs m/s
-    #                             restfreqs       = linefreq,
-    #                             export_FITS     = True,
-    #                             estimate_rms    = True, # prints and returns rms (Jy/beam) outside mask, nice to compare with our estimate
-    #                             **dmask.mask_dict[line+'_keplerian'])
-
     """ Clean down to the cleaning threshold """
     imagename = imagename.replace('.dirty', '.clean')
 
     for ext in tclean_rm_extensions:
         print('Deleting previous file: ', imagename+ext)
         os.system('rm -rf '+ imagename+ext)
-
-
-    # print("Doing initial niter=1 clean to kickstart the initial mask...")
-    # casatasks.tclean(vis                    = vis,              # msfile to image
-    #                  imagename              = imagename,        # file names preceding .image, .residual, etc.
-    #                  specmode               = 'cube',
-    #                  restfreq               = linefreq,
-    #                  start                  = start,
-    #                  width                  = width,
-    #                  nchan                  = nchan,
-    #                  outframe               = 'lsrk',
-    #                  veltype                = 'radio',
-    #                  deconvolver            = 'multiscale',
-    #                  scales                 = scales,
-    #                  weighting              = 'briggsbwtaper',  # Ryan's suggestion over 'briggs' (used by MAPS)
-    #                  robust                 = robust,
-    #                  imsize                 = imsize,
-    #                  cell                   = cell,
-    #                  spw                    = '',
-    #                  threshold              = threshold,
-    #                  perchanweightdensity   = True,             # Ryan's suggestion over False (used by MAPS)
-    #                  restoringbeam          = 'common',
-    #                  cyclefactor            = 1,
-    #                  uvtaper                = uvtaper,
-    #                  savemodel              = 'none',
-    #
-    #                  niter                  = 1,            # these two need to be the same, and we only mean to kickstart
-    #                  cycleniter             = 1,            # these two need to be the same, and we only mean to kickstart
-    #                  interactive            = False,
-    #                  mask                   = initial_mask,
-    #                  usemask                = 'user')
-
-    # if os.path.exists(imagename+'.autothresh1'):
-    #     print("Making a copy of .clean.autothresh1 for posterity and deleting original so tclean doesn't throw an error...")
-    #     copytree(imagename+'.autothresh1', imagename+'.autothresh1_initial')
-    #     os.system('rm -rf '+imagename+'.autothresh1')
 
 
     print("Starting to clean the "+line+" line down to threshold of "+threshold+"...")
@@ -331,16 +251,16 @@ def tclean_wrapper_line(vis,
 ######################################################
 """
 
-molecules       = ['12CO','13CO']#'13CO', 'C18O', 'SO']#, '12CO']
-vres_version    = 'v12' # 24-Mar-2023
+molecules       = ['SO']
+vres_version    = 'v11' # 26-Apr-2024
 
 for line in molecules:
-    for robust in [0.0]:
-        for cont in ['']:#, '_wcont']:
-            os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont)
+    for robust in [0.5, 1.5]:
+        for cont in ['_wcont']: #['']:#, '_wcont']:
+            os.system('mkdir '+ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+cont+'_robust'+str(robust))
             vis             = ddata.data_dict[line+cont]
             robust          = robust
-            imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+'_robust'+str(robust)+cont+'/ABAur_'+line
+            imagename       = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/'+vres_version+cont+'_robust'+str(robust)+'/ABAur_'+line+cont
             # maskname        = ddata.data_dict['NRAO_path']+'images_lines/'+line+'/masks/'+'v2'+'_robust1.5_10mean_model.mask'
 
             print("################################################")
@@ -358,81 +278,6 @@ for line in molecules:
                                 vres_version   = vres_version,
                                 # maskname       = maskname
                                 )
-
-
-"""
-######################################################
-#### Adjustments to this script still to be made #####
-######################################################
-
-- Consider using smallscalebias to bias towards smaller scales?
-
-- Save image_metrics csv
-- Flexibility for different robust parameters and uv tapers
-    - Make cell size dependent on those choices
-- Flexibility for continuum-subtracted or not
-    - Change the masks accordingly
-
-DONE - adjust rms noise estimation to use first 10 channels instead; mask input is not working
-DONE - try to get tclean to start up with user specified mask
-DONE - Save the JvM convolved model?
-DONE - Finess/decide on keplerian mask parameters for SO
-DONE - Figure out good masks for 12CO, 13CO, C18O, save them
-CAN'T - Save the .last files for posterity [.LAST FILES AREN'T CREATED WITH MODULAR CASA]
-CAN'T - Save imview frames of images made overlaying automultithresh mask
-CAN'T - ADD fullsummary=True (!!) [tclean throws error, "unexpected keyword argument"]
-"""
-
-
-
-"""
-Spectral extent of line emission, measured in (shallowly) cleaned robust=1.5 image cubes:
-12CO: 0.222 km/s --> 12.066 km/s
-13CO: 2.919 km/s --> 9.000 km/s
-C18O: 3.498 km/s --> 8.538 km/s
-SO:   4.422 km/s --> 7.632 km/s
-"""
-
-# TRACEBACK OF FULLSUMMARY=TRUE THROWING ERROR (not printed to casalog: casa-20230309-020103.log)
-# Traceback (most recent call last):
-#   File "major_image_lines.py", line 373, in <module>
-#     vres_version   = vres_version,
-#   File "major_image_lines.py", line 267, in tclean_wrapper_line
-#     fullsummary            = True)             # attempt to access the summary dictionary
-# TypeError: __call__() got an unexpected keyword argument 'fullsummary'
-
-
-
-# Notes:
-
-# PSF is unitless
-# model is Jy/pixel
-# residual is unitless
-# pb is unitless
-
-    # 12CO emission starts at ~11.5 km/s or even larger; faint but there. ends at ~0.7 km/s, faint but also there farther out.
-    # 13CO emission starts at 9.1 km/s; ends at about 3 km/s.
-    # C18 emission starts at 8.1 km/s; ends at 3.7 km/s
-    # SO emission starts around 7.5 km/s; ends at ~ 4.17 km/s
-
-# thresholds = ['3.43mJy', '6.69mJy', '1.64mJy', '1.68mJy'] # from TM1 pipeline weblog
-
-
-# MAPS Huang on GM Aur:
-# multiscale scales: [0, 0.4, 1, 2] arcsec
-# The mask was initialized with full coverage of the primary beam from 5.2-6.4 km s^1, where the emission is the broadest, because auto-multithresh algorithm does not readily mask diffuse emission.
-# After some experimentation, the following auto-multithresh parameters were selected:
-# sidelobethreshold = 3.0,
-# noisethreshold = 4.0,
-# lownoisethreshold = 1.5,
-# and minbeamfrac = 0.3.
-# The CLEAN threshold was set to 5 mJy, corresponding to ~3x the rms of line-free channels in the dirty image.
-
-# huang 2022 on DR Tau
-# sidelobethreshold=2.0,
-# noisethreshold=4.0,
-# minbeamfrac=0.3,
-# negativethreshold=7.0.
 
 
 
