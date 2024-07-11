@@ -8,12 +8,12 @@ When applicable/possible, I've tried to cite the *original* paper who found each
 
 disk_dict = {'name': 'AB Aur',
              'distance': 155.9403,                      # +/- 0.9045; source distance in pc, from Gaia DR3 archive calculated as 1000/(parallax), error as 1000*(error in p)/(p^2)
-             'incl': 23.2,                              # +/- ?; inclination in degrees, Tang et al. (2017) (from the dust)
+             'incl': 23.2,                              # +/- ?; inclination in degrees, Tang et al. (2012) (from the dust)
              'PA': 54.,                                 # +/- ?; position angle in degrees, Tang et al. (2017)
              'PA_gofish': 54. + 180.0,                  # +/- ?; position angle in degrees, corrected for gofish
              'M_star': 2.4,                             # +/- 0.2; stellar mass in solar masses, DeWarf et al. 2003, Herbertz et al. 1991
 
-             'L_star_23': 59, 				# +/- 5; stellar luminosity in solar luminosities, estimated from radiative transfer modelling, Currie et al. 2023
+             'L_star_23': 59, 				# +/- 5; stellar luminosity in solar luminosities, estimated from radiative transfer modelling, Currie et al. 2022
              'L_star_03': 38, 				# +/- ?; stellar luminosity in solar luminosities, deWarf et al. 2003. Note, given as ~38
              'L_star_98': 47, 				# +17/-10; stellar luminosity in solar luminosities, van den Ancker et al. 1998
              'L_star_92': 57, 				# +/- ?; stellar luminosity in solar luminosities, estimated from Hillenbrand et al. 1992

@@ -35,7 +35,6 @@ import dictionary_disk as ddisk # contains disk_dict
 import dictionary_mask as dmask # contains mask_dict
 import dictionary_lines as dlines # contains line_dict
 
-from JvM_correction_casa6 import do_JvM_correction_and_get_epsilon
 from keplerian_mask import make_keplerian_mask
 from astropy.io import fits
 from scipy.ndimage import gaussian_filter

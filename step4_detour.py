@@ -47,14 +47,14 @@ alignment_offsets.append([-0.020729,-0.01054])
 alignment_offsets.append([-0.0045512,-0.0276])
 
 print('Aligning the long baseline execution blocks with the following offsets: ', alignment_offsets)
-# alignment.align_measurement_sets(reference_ms       = reference_for_LB_alignment,
-#                                  align_ms           = offset_LB_EBs,
-#                                  align_offsets      = alignment_offsets)
+alignment.align_measurement_sets(reference_ms       = reference_for_LB_alignment,
+                                 align_ms           = offset_LB_EBs,
+                                 align_offsets      = alignment_offsets)
 
 """Check that the phase center of each EB is: 04:55:45.854900 +30.33.03.73320 J2000"""
-# for EB in ddata.data_dict['LB_EBs']:
-#     vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initlines_shift.ms']
-#     casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
+for EB in ddata.data_dict['LB_EBs']:
+    vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initlines_shift.ms']
+    casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
 
 
 
@@ -80,14 +80,14 @@ alignment_offsets.append([-0.013133,0.03949])
 alignment_offsets.append([0.11922,-0.19222])
 
 print('Aligning the long baseline execution blocks with the following offsets: ', alignment_offsets)
-# alignment.align_measurement_sets(reference_ms       = reference_for_SB_alignment,
-#                                  align_ms           = offset_SB_EBs,
-#                                  align_offsets      = alignment_offsets)
+alignment.align_measurement_sets(reference_ms       = reference_for_SB_alignment,
+                                 align_ms           = offset_SB_EBs,
+                                 align_offsets      = alignment_offsets)
 
 """Check that the phase center of each EB is: 04:55:45.854900 +30.33.03.73320 J2000"""
-# for EB in ddata.data_dict['SB_EBs']:
-#     vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initlines_shift.ms']
-#     casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
+for EB in ddata.data_dict['SB_EBs']:
+    vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initlines_shift.ms']
+    casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
 
 
 

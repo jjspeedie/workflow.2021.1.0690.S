@@ -64,8 +64,8 @@ seconds. (Representing smallest possible solint).
 """
 
 """Start ourselves off with an orientation"""
-# listobs(vis=data_dict['NRAO_path']+data_dict['SB_concat']['contp0'], listfile=data_dict['NRAO_path']+data_dict['SB_concat']['contp0']+'.listobs.txt')
-# listobs(vis=data_dict['NRAO_path']+data_dict['LB_concat']['contp0'], listfile=data_dict['NRAO_path']+data_dict['LB_concat']['contp0']+'.listobs.txt')
+listobs(vis=data_dict['NRAO_path']+data_dict['SB_concat']['contp0'], listfile=data_dict['NRAO_path']+data_dict['SB_concat']['contp0']+'.listobs.txt')
+listobs(vis=data_dict['NRAO_path']+data_dict['LB_concat']['contp0'], listfile=data_dict['NRAO_path']+data_dict['LB_concat']['contp0']+'.listobs.txt')
 
 
 """Set image plane cell and image size:
@@ -100,31 +100,31 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '9.00arcsec']]" % (mask_ra, mas
 """
 
 # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'],
-#               imagename     = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# number (interactive) iterations performed: 2
+tclean_wrapper(vis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'],
+              imagename     = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+number (interactive) iterations performed: 2
 
-# imagename         = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# dir4lasts         = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict['contp0.ms']:  {'SB_concat': {'beammajor': 0.90156871080396, 'beamminor': 0.6002742648124799, 'beampa': -7.856073856354, 'disk_flux': 96.75444235717598, 'peak_intensity': 13.460222631692886, 'rms': 68.33170657680805, 'SNR': 196.9835572094627}}
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.90191823244092, 'beamminor': 0.60061353445044, 'beampa': -7.856902599335, 'disk_flux': 96.24543315326115, 'peak_intensity': 13.490645214915276, 'rms': 77.00131321364115, 'SNR': 175.20019661853433}}
-# os.system('mv *.last '+dir4lasts)
+imagename         = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+dir4lasts         = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict['contp0.ms']:  {'SB_concat': {'beammajor': 0.90156871080396, 'beamminor': 0.6002742648124799, 'beampa': -7.856073856354, 'disk_flux': 96.75444235717598, 'peak_intensity': 13.460222631692886, 'rms': 68.33170657680805, 'SNR': 196.9835572094627}}
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.90191823244092, 'beamminor': 0.60061353445044, 'beampa': -7.856902599335, 'disk_flux': 96.24543315326115, 'peak_intensity': 13.490645214915276, 'rms': 77.00131321364115, 'SNR': 175.20019661853433}}
+os.system('mv *.last '+dir4lasts)
 
 
 
@@ -133,540 +133,540 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '9.00arcsec']]" % (mask_ra, mas
 """
 """We need to not combine spectral windows at least once, to remove any potential per-spw phase offsets"""
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0']
-# caltable          = inputvis.replace('p0.ms', 'p1.cal')
-# outputvis         = inputvis.replace('p0.ms', 'p1.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = '' #
-# solint      = 'inf' #
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:04:39.4
-# # 1 of 26 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:19:10.7
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:17:09.1
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:44:40.3
-#
-# """ Apply the solutions """
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 3
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict['contp1.ms']:  {'SB_concat': {'beammajor': 0.90191823244092, 'beamminor': 0.60061353445044, 'beampa': -7.856902599335, 'disk_flux': 96.75365587533217, 'peak_intensity': 13.484212569892406, 'rms': 68.46133555154267, 'SNR': 196.96099208786998}}
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9019809961318801, 'beamminor': 0.60065919160848, 'beampa': -7.844259262085, 'disk_flux': 96.75450787390174, 'peak_intensity': 13.490589335560799, 'rms': 68.51391554740368, 'SNR': 196.9029098362781}}
-#
-# os.system('mv *.last '+dir4lasts)
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0']
+caltable          = inputvis.replace('p0.ms', 'p1.cal')
+outputvis         = inputvis.replace('p0.ms', 'p1.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = '' #
+solint      = 'inf' #
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:04:39.4
+# 1 of 26 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:19:10.7
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:17:09.1
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:44:40.3
+
+""" Apply the solutions """
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 3
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict['contp1.ms']:  {'SB_concat': {'beammajor': 0.90191823244092, 'beamminor': 0.60061353445044, 'beampa': -7.856902599335, 'disk_flux': 96.75365587533217, 'peak_intensity': 13.484212569892406, 'rms': 68.46133555154267, 'SNR': 196.96099208786998}}
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9019809961318801, 'beamminor': 0.60065919160848, 'beampa': -7.844259262085, 'disk_flux': 96.75450787390174, 'peak_intensity': 13.490589335560799, 'rms': 68.51391554740368, 'SNR': 196.9029098362781}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 """
 ################ PERFORM 2nd ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p1.ms')
-# caltable          = inputvis.replace('p1.ms', 'p2.cal')
-# outputvis         = inputvis.replace('p1.ms', 'p2.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = '' #
-# solint      = '243s' # half of a scan
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-#
-# # looks like now or, latest, next round, is the time to combine spws
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:35:26.7
-# # 2 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/19:35:26.7
-# # 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:35:26.7
-# # 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:39:30.2
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:35:26.7
-# # 2 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:39:30.2
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:44:24.1
-# # 2 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/19:48:27.7
-# # 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:48:27.7
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:44:24.1
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:48:27.6
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:53:43.1
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:57:46.8
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:53:43.3
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:57:46.9
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:02:42.2
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/20:06:45.8
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:06:45.7
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/20:06:45.7
-# # 2 of 23 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:16:04.4
-# # 1 of 24 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/20:16:04.3
-# # 1 of 23 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:19:10.7
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:19:22.3
-# # 2 of 34 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:15:18.8
-# # 2 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:19:22.3
-# # 2 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:15:18.5
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:28:21.1
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:24:17.1
-# # 4 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:28:20.7
-# # 2 of 33 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:28:20.1
-# # 2 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:24:16.6
-# # 4 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:28:20.5
-# # 2 of 31 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:24:17.2
-# # 1 of 32 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:28:20.6
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:33:38.2
-# # 3 of 32 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:37:42.1
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:33:42.1
-# # 3 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:33:38.2
-# # 3 of 31 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:37:42.2
-# # 1 of 32 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:33:38.3
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:42:40.1
-# # 3 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:46:39.9
-# # 2 of 34 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:46:39.8
-# # 1 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:46:40.0
-# # 2 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:42:41.4
-# # 1 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:46:39.9
-#
-# """ Apply the solutions """
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 3
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict['contp2.ms']:  {'SB_concat': {'beammajor': 0.91481429338452, 'beamminor': 0.6015850901604, 'beampa': -8.591674804688, 'disk_flux': 96.83035098664075, 'peak_intensity': 13.805755414068699, 'rms': 67.89951261198962, 'SNR': 203.32628148542696}}
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9148665666582, 'beamminor': 0.6016330122947999, 'beampa': -8.578067779541, 'disk_flux': 96.83045548541152, 'peak_intensity': 13.81117943674326, 'rms': 67.93956584327374, 'SNR': 203.28624808412158}}
-#
-# os.system('mv *.last '+dir4lasts)
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p1.ms')
+caltable          = inputvis.replace('p1.ms', 'p2.cal')
+outputvis         = inputvis.replace('p1.ms', 'p2.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = '' #
+solint      = '243s' # half of a scan
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+
+# looks like now or, latest, next round, is the time to combine spws
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:35:26.7
+# 2 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/19:35:26.7
+# 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:35:26.7
+# 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:39:30.2
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:35:26.7
+# 2 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:39:30.2
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:44:24.1
+# 2 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/19:48:27.7
+# 2 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:48:27.7
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:44:24.1
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:48:27.6
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:53:43.1
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/19:57:46.8
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/19:53:43.3
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/19:57:46.9
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=1 at 2022/04/19/20:02:42.2
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=2 at 2022/04/19/20:06:45.8
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:06:45.7
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/20:06:45.7
+# 2 of 23 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:16:04.4
+# 1 of 24 solutions flagged due to SNR < 2.5 in spw=4 at 2022/04/19/20:16:04.3
+# 1 of 23 solutions flagged due to SNR < 2.5 in spw=3 at 2022/04/19/20:19:10.7
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:19:22.3
+# 2 of 34 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:15:18.8
+# 2 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:19:22.3
+# 2 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:15:18.5
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:28:21.1
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:24:17.1
+# 4 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:28:20.7
+# 2 of 33 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:28:20.1
+# 2 of 33 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:24:16.6
+# 4 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:28:20.5
+# 2 of 31 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:24:17.2
+# 1 of 32 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:28:20.6
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:33:38.2
+# 3 of 32 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:37:42.1
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:33:42.1
+# 3 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:33:38.2
+# 3 of 31 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:37:42.2
+# 1 of 32 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:33:38.3
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:42:40.1
+# 3 of 33 solutions flagged due to SNR < 2.5 in spw=6 at 2022/05/15/18:46:39.9
+# 2 of 34 solutions flagged due to SNR < 2.5 in spw=7 at 2022/05/15/18:46:39.8
+# 1 of 32 solutions flagged due to SNR < 2.5 in spw=8 at 2022/05/15/18:46:40.0
+# 2 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:42:41.4
+# 1 of 33 solutions flagged due to SNR < 2.5 in spw=9 at 2022/05/15/18:46:39.9
+
+""" Apply the solutions """
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 3
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict['contp2.ms']:  {'SB_concat': {'beammajor': 0.91481429338452, 'beamminor': 0.6015850901604, 'beampa': -8.591674804688, 'disk_flux': 96.83035098664075, 'peak_intensity': 13.805755414068699, 'rms': 67.89951261198962, 'SNR': 203.32628148542696}}
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9148665666582, 'beamminor': 0.6016330122947999, 'beampa': -8.578067779541, 'disk_flux': 96.83045548541152, 'peak_intensity': 13.81117943674326, 'rms': 67.93956584327374, 'SNR': 203.28624808412158}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 """
 ################ PERFORM 3rd ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p2.ms')
-# caltable          = inputvis.replace('p2.ms', 'p3.cal')
-# outputvis         = inputvis.replace('p2.ms', 'p3.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'spw' # now reluctantly combining spectral windows
-# solint      = '120s' # quarter of a scan
-# spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, now we need a spwmap.
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-#
-# # these failed solutions occur in SB EB2 (to be expected)
-# # 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:16:15.6
-# # 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:23:14.0
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:19.0
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:38:39.6
-#
-#
-# """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 3
-#
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict['contp3.ms']:  {'SB_concat': {'beammajor': 0.9178013801574, 'beamminor': 0.60588830709468, 'beampa': -8.451219558716, 'disk_flux': 96.87789973656545, 'peak_intensity': 14.024244621396065, 'rms': 67.72439317210116, 'SNR': 207.078187998786}}
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9178589582441999, 'beamminor': 0.6059303283690001, 'beampa': -8.436779975891, 'disk_flux': 96.87768215597033, 'peak_intensity': 14.026996679604053, 'rms': 67.73446447962476, 'SNR': 207.0880280425561}}
-#
-# os.system('mv *.last '+dir4lasts)
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p2.ms')
+caltable          = inputvis.replace('p2.ms', 'p3.cal')
+outputvis         = inputvis.replace('p2.ms', 'p3.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'spw' # now reluctantly combining spectral windows
+solint      = '120s' # quarter of a scan
+spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, now we need a spwmap.
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+
+# these failed solutions occur in SB EB2 (to be expected)
+# 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:16:15.6
+# 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:23:14.0
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:19.0
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:38:39.6
+
+
+""" Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 3
+
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict['contp3.ms']:  {'SB_concat': {'beammajor': 0.9178013801574, 'beamminor': 0.60588830709468, 'beampa': -8.451219558716, 'disk_flux': 96.87789973656545, 'peak_intensity': 14.024244621396065, 'rms': 67.72439317210116, 'SNR': 207.078187998786}}
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9178589582441999, 'beamminor': 0.6059303283690001, 'beampa': -8.436779975891, 'disk_flux': 96.87768215597033, 'peak_intensity': 14.026996679604053, 'rms': 67.73446447962476, 'SNR': 207.0880280425561}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 """
 ################ PERFORM 4th ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p3.ms')
-# caltable          = inputvis.replace('p3.ms', 'p4.cal')
-# outputvis         = inputvis.replace('p3.ms', 'p4.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'spw' # still reluctantly combining spectral windows
-# solint      = '60s' # an eighth of a scan
-# spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-#
-# # these failed solutions occur in SB EB2 (to be expected)
-# # 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:13:44.8
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:26:45.7
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:49.3
-# # 2 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:37:08.9
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:39:09.8
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:42:03.8
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:43:04.3
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:46:07.9
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:08.3
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:08.8
-#
-# """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 3
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict['contp4.ms']:  {'SB_concat': {'beammajor': 0.9203351736067201, 'beamminor': 0.61289548873884, 'beampa': -7.853649616241, 'disk_flux': 97.01265060549277, 'peak_intensity': 14.433663338422775, 'rms': 65.79302278945445, 'SNR': 219.37984799105863}}
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9203972220421199, 'beamminor': 0.6129397153853999, 'beampa': -7.838306427002, 'disk_flux': 97.01395422578855, 'peak_intensity': 14.434458687901497, 'rms': 65.82876463800486, 'SNR': 219.27281739642527}}
-#
-# os.system('mv *.last '+dir4lasts)
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p3.ms')
+caltable          = inputvis.replace('p3.ms', 'p4.cal')
+outputvis         = inputvis.replace('p3.ms', 'p4.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'spw' # still reluctantly combining spectral windows
+solint      = '60s' # an eighth of a scan
+spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+
+# these failed solutions occur in SB EB2 (to be expected)
+# 1 of 38 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:13:44.8
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:26:45.7
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:49.3
+# 2 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:37:08.9
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:39:09.8
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:42:03.8
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:43:04.3
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:46:07.9
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:08.3
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:08.8
+
+""" Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 3
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict['contp4.ms']:  {'SB_concat': {'beammajor': 0.9203351736067201, 'beamminor': 0.61289548873884, 'beampa': -7.853649616241, 'disk_flux': 97.01265060549277, 'peak_intensity': 14.433663338422775, 'rms': 65.79302278945445, 'SNR': 219.37984799105863}}
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9203972220421199, 'beamminor': 0.6129397153853999, 'beampa': -7.838306427002, 'disk_flux': 97.01395422578855, 'peak_intensity': 14.434458687901497, 'rms': 65.82876463800486, 'SNR': 219.27281739642527}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 """
 ################ PERFORM 5th ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p4.ms')
-# caltable          = inputvis.replace('p4.ms', 'p5.cal')
-# outputvis         = inputvis.replace('p4.ms', 'p5.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'spw,scan' # still reluctantly combining spectral windows; now scans as well
-# solint      = '30s' # a 16th of a scan
-# spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-#
-# # we're getting the same flags over and over; maybe a cloud passed between 6:15-6:45pm that day
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:16:43.2
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:17:43.7
-# # 2 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:21:08.4
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:22:58.9
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:26:00.4
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:28:33.7
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:35:20.9
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:44:20.0
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:23.5
-#
-#
-# """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 4
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9267931580544, 'beamminor': 0.6219916939735199, 'beampa': -7.578899383545, 'disk_flux': 97.4270423236754, 'peak_intensity': 14.997098594903946, 'rms': 63.08917232357962, 'SNR': 237.712717453083}}
-#
-# os.system('mv *.last '+dir4lasts)
-# os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p4.ms')
+caltable          = inputvis.replace('p4.ms', 'p5.cal')
+outputvis         = inputvis.replace('p4.ms', 'p5.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'spw,scan' # still reluctantly combining spectral windows; now scans as well
+solint      = '30s' # a 16th of a scan
+spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+
+# we're getting the same flags over and over; maybe a cloud passed between 6:15-6:45pm that day
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:16:43.2
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:17:43.7
+# 2 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:21:08.4
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:22:58.9
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:26:00.4
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:28:33.7
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:35:20.9
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:44:20.0
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:23.5
+
+
+""" Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 4
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9267931580544, 'beamminor': 0.6219916939735199, 'beampa': -7.578899383545, 'disk_flux': 97.4270423236754, 'peak_intensity': 14.997098594903946, 'rms': 63.08917232357962, 'SNR': 237.712717453083}}
+
+os.system('mv *.last '+dir4lasts)
+os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
 
 
 """
 ################ PERFORM 6th ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p5.ms')
-# caltable          = inputvis.replace('p5.ms', 'p6.cal')
-# outputvis         = inputvis.replace('p5.ms', 'p6.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'spw,scan' # still reluctantly combining spectral windows; now scans as well
-# solint      = '18s' # a 27th of a scan
-# spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
-# minsnr      = 2.5 # don't want this to be too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
-#
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=0 at 2022/04/19/20:19:19.7
-# # 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:14:18.0
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:04.0
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:22.1
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:40.2
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:36:53.7
-# # 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:37:11.9
-# # 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:38:24.5
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:59.8
-# # 3 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:17.9
-# # 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:33.1
-#
-# """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 4
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9292359352111199, 'beamminor': 0.62644398212448, 'beampa': -7.268037319183, 'disk_flux': 97.56292020763868, 'peak_intensity': 15.533193945884705, 'rms': 60.367925476803954, 'SNR': 257.3087251748157}}
-#
-# os.system('mv *.last '+dir4lasts)
-# os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
-#
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p5.ms')
+caltable          = inputvis.replace('p5.ms', 'p6.cal')
+outputvis         = inputvis.replace('p5.ms', 'p6.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'spw,scan' # still reluctantly combining spectral windows; now scans as well
+solint      = '18s' # a 27th of a scan
+spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
+minsnr      = 2.5 # don't want this to be too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
+
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=0 at 2022/04/19/20:19:19.7
+# 1 of 37 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:14:18.0
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:04.0
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:22.1
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:29:40.2
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:36:53.7
+# 1 of 34 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:37:11.9
+# 1 of 35 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:38:24.5
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:47:59.8
+# 3 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:17.9
+# 1 of 36 solutions flagged due to SNR < 2.5 in spw=5 at 2022/05/15/18:48:33.1
+
+""" Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 4
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9292359352111199, 'beamminor': 0.62644398212448, 'beampa': -7.268037319183, 'disk_flux': 97.56292020763868, 'peak_intensity': 15.533193945884705, 'rms': 60.367925476803954, 'SNR': 257.3087251748157}}
+
+os.system('mv *.last '+dir4lasts)
+os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
+
 
 
 
@@ -674,44 +674,44 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '9.00arcsec']]" % (mask_ra, mas
 ################ PERFORM 7th ROUND OF SELFCAL (AMPLITUDE+PHASE) #################
 """
 
-#
-# inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p6.ms')
-# caltable          = inputvis.replace('p6.ms', 'ap.cal')
-# outputvis         = inputvis.replace('p6.ms', 'ap.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['SB_concat']['refants_list']
-# calmode     = 'ap' # amplitude+phase
-# combine     = '' # in none of the DSHARP continuum scripts do they combine scan for SB ap selfcal; for HD 163296 they combine 'spw'; but in-text they say they don't.
-# spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
-# solint      = 'inf' # will go up to scan length
-# minsnr      = 3. # this gets raised
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-# solnorm     = False # I don't know why we're doing this but we are because DSHARP does; default is False anyway
+
+inputvis          = data_dict['NRAO_path']+data_dict['SB_concat']['contp0'].replace('p0.ms', 'p6.ms')
+caltable          = inputvis.replace('p6.ms', 'ap.cal')
+outputvis         = inputvis.replace('p6.ms', 'ap.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['SB_concat']['refants_list']
+calmode     = 'ap' # amplitude+phase
+combine     = '' # in none of the DSHARP continuum scripts do they combine scan for SB ap selfcal; for HD 163296 they combine 'spw'; but in-text they say they don't.
+spwmap      = [0,0,0,0,0,5,5,5,5,5] # since we did combine=spw, still we need a spwmap.
+solint      = 'inf' # will go up to scan length
+minsnr      = 3. # this gets raised
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+solnorm     = False # I don't know why we're doing this but we are because DSHARP does; default is False anyway
 
 """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant, solnorm=solnorm)
-# for observation in data_dict['SB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant, solnorm=solnorm)
+for observation in data_dict['SB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
 # combine='spw'
 # 1 of 36 solutions flagged due to SNR < 3 in spw=0 at 2022/04/19/20:19:10.5
 # 1 of 37 solutions flagged due to SNR < 3 in spw=5 at 2022/05/15/18:17:16.9
@@ -753,36 +753,36 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '9.00arcsec']]" % (mask_ra, mas
 
 
 """ Apply the solutions"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
-#
-#
-# """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = SB_imsize,
-#               cellsize      = SB_cellsize,
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 4
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'SB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'SB_concat': {'beammajor': 0.9361717700958001, 'beamminor': 0.6296230554580801, 'beampa': -7.48325920105, 'disk_flux': 93.63928425306288, 'peak_intensity': 15.294084325432777, 'rms': 53.25272680004415, 'SNR': 287.1981444792438}}
-#
-# os.system('mv *.last '+dir4lasts)
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+
+
+""" Image the results; check the resulting map """
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = SB_imsize,
+              cellsize      = SB_cellsize,
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 4
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'SB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'SB_concat': {'beammajor': 0.9361717700958001, 'beamminor': 0.6296230554580801, 'beampa': -7.48325920105, 'disk_flux': 93.63928425306288, 'peak_intensity': 15.294084325432777, 'rms': 53.25272680004415, 'SNR': 287.1981444792438}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 
@@ -814,14 +814,14 @@ SB_concat_shifted_selfcal  = data_dict['NRAO_path']+data_dict['SB_concat']['cont
 LB_concat_shifted          = data_dict['NRAO_path']+data_dict['LB_concat']['contp0']
 BB_concat_shifted          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0']
 
-# os.system('rm -rf %s*' % BB_concat_shifted)
-# concat(vis          = [SB_concat_shifted_selfcal, LB_concat_shifted],
-#        concatvis    = BB_concat_shifted,
-#        dirtol       = '0.1arcsec',
-#        copypointing = False)
+os.system('rm -rf %s*' % BB_concat_shifted)
+concat(vis          = [SB_concat_shifted_selfcal, LB_concat_shifted],
+       concatvis    = BB_concat_shifted,
+       dirtol       = '0.1arcsec',
+       copypointing = False)
 
 """Start ourselves off with an orientation"""
-# listobs(vis=BB_concat_shifted, listfile=BB_concat_shifted+'.listobs.txt')
+listobs(vis=BB_concat_shifted, listfile=BB_concat_shifted+'.listobs.txt')
 
 
 """Set image plane cell and image size:
@@ -855,34 +855,34 @@ noise_annulus = "annulus[[%s, %s],['%.2farcsec', '9.00arcsec']]" % (mask_ra, mas
 ################ IMAGE THE STARTING MS FOR MODEL GENERATION AND COMPARISON #################
 """
 
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = BB_concat_shifted,
-#               imagename     = BB_concat_shifted.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask, # it's good
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 5
-# # 2022-12-09 21:15:05	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = BB_concat_shifted.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask,
-#                                            noise_mask     = noise_annulus)
-# dir4lasts         = BB_concat_shifted.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 113.30870792425621, 'peak_intensity': 4.4128429144620895, 'rms': 31.834778669739176, 'SNR': 138.61704396446004}}
-#
-# os.system('mv *.last '+dir4lasts)
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = BB_concat_shifted,
+              imagename     = BB_concat_shifted.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask, # it's good
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 5
+# 2022-12-09 21:15:05	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = BB_concat_shifted.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask,
+                                           noise_mask     = noise_annulus)
+dir4lasts         = BB_concat_shifted.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 113.30870792425621, 'peak_intensity': 4.4128429144620895, 'rms': 31.834778669739176, 'SNR': 138.61704396446004}}
+
+os.system('mv *.last '+dir4lasts)
 
 
 """
@@ -906,43 +906,43 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 """
 """We want to not combine spectral windows at least once, but it's just too low SNR unfortunately"""
 
-# inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0']
-# caltable          = inputvis.replace('p0.ms', 'p1.cal')
-# outputvis         = inputvis.replace('p0.ms', 'p1.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['BB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
-# solint      = '900s' # a little over half an entire EB
-# spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
-# applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
-# minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
+inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0']
+caltable          = inputvis.replace('p0.ms', 'p1.cal')
+outputvis         = inputvis.replace('p0.ms', 'p1.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['BB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
+solint      = '900s' # a little over half an entire EB
+spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
+applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
+minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
 
 """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['BB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['BB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
 # 2 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:49:53.6
 # 3 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/15:08:11.7
 # 5 of 36 solutions flagged due to SNR < 2.5 in spw=15 at 2022/07/19/12:12:23.4
@@ -979,37 +979,37 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 
 
 """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 
 """ Image the results; check the resulting map """
 # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 5
-# # 2022-12-10 00:56:54	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.377480983734, 'beamminor': 0.269453197717668, 'beampa': -9.022125244141, 'disk_flux': 113.11104993796016, 'peak_intensity': 4.445771686732769, 'rms': 28.57707804339274, 'SNR': 155.57124769656667}}
-# os.system('mv *.last '+dir4lasts)
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 5
+# 2022-12-10 00:56:54	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.377480983734, 'beamminor': 0.269453197717668, 'beampa': -9.022125244141, 'disk_flux': 113.11104993796016, 'peak_intensity': 4.445771686732769, 'rms': 28.57707804339274, 'SNR': 155.57124769656667}}
+os.system('mv *.last '+dir4lasts)
 
 
 
@@ -1017,43 +1017,43 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 ################ PERFORM 2nd ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p1.ms')
-# caltable          = inputvis.replace('p1.ms', 'p2.cal')
-# outputvis         = inputvis.replace('p1.ms', 'p2.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['BB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
-# solint      = '360s' # a little over half an entire EB
-# spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
-# applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
-# minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable) # had a small accident here (12Dec22), had to regenerate it
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['BB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
+inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p1.ms')
+caltable          = inputvis.replace('p1.ms', 'p2.cal')
+outputvis         = inputvis.replace('p1.ms', 'p2.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['BB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
+solint      = '360s' # a little over half an entire EB
+spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
+applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
+minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable) # had a small accident here (12Dec22), had to regenerate it
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['BB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
 # 9 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:16:32.6
 # 1 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:25:49.2
 # 2 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:48:01.0
@@ -1127,37 +1127,37 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 
 
 """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 
 """ Image the results; check the resulting map """
 # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 5
-# # 2022-12-12 15:28:35	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 109.00217241807141, 'peak_intensity': 4.454145673662424, 'rms': 25.28222451231294, 'SNR': 176.17696858491104}}
-# os.system('mv *.last '+dir4lasts)
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 5
+# 2022-12-12 15:28:35	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 109.00217241807141, 'peak_intensity': 4.454145673662424, 'rms': 25.28222451231294, 'SNR': 176.17696858491104}}
+os.system('mv *.last '+dir4lasts)
 
 
 
@@ -1167,43 +1167,43 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 ################ PERFORM 3rd ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p2.ms')
-# caltable          = inputvis.replace('p2.ms', 'p3.cal')
-# outputvis         = inputvis.replace('p2.ms', 'p3.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['BB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
-# solint      = '180s' # a little over half an entire EB
-# spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
-# applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
-# minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
+inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p2.ms')
+caltable          = inputvis.replace('p2.ms', 'p3.cal')
+outputvis         = inputvis.replace('p2.ms', 'p3.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['BB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
+solint      = '180s' # a little over half an entire EB
+spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
+applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
+minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
 
 """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['BB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['BB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
 # 8 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:16:32.6
 # 3 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:31:53.5
 # 2 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:49:50.6
@@ -1304,39 +1304,39 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 
 
 """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 
 """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 5
-# # 2022-12-12 16:35:46	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 108.94340607637508, 'peak_intensity': 4.509070888161659, 'rms': 25.058145680905398, 'SNR': 179.94431613499734}}
-#
-# os.system('mv *.last '+dir4lasts)
-# os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 5
+# 2022-12-12 16:35:46	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.37748101353659996, 'beamminor': 0.26945322751998, 'beampa': -9.022125244141, 'disk_flux': 108.94340607637508, 'peak_intensity': 4.509070888161659, 'rms': 25.058145680905398, 'SNR': 179.94431613499734}}
+
+os.system('mv *.last '+dir4lasts)
+os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
 
 
 
@@ -1345,43 +1345,43 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 ################ PERFORM 4th ROUND OF SELFCAL #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p3.ms')
-# caltable          = inputvis.replace('p3.ms', 'p4.cal')
-# outputvis         = inputvis.replace('p3.ms', 'p4.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['BB_concat']['refants_list']
-# calmode     = 'p' # phase-only
-# combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
-# solint      = '60s' # a little over half an entire EB
-# spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
-# applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
-# minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-#
-# """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant)
-# for observation in data_dict['BB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine)
+inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p3.ms')
+caltable          = inputvis.replace('p3.ms', 'p4.cal')
+outputvis         = inputvis.replace('p3.ms', 'p4.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['BB_concat']['refants_list']
+calmode     = 'p' # phase-only
+combine     = 'scan, spw' # too many failed solns with combine='' or 'scan'
+solint      = '60s' # a little over half an entire EB
+spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
+applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
+minsnr      = 2.5 # DSHARP uses 1.5 for combined, but that seems too low
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+
+""" Generate the solutions """
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant)
+for observation in data_dict['BB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine)
 # 9 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:16:32.6
 # 2 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:18:03.3
 # 3 of 41 solutions flagged due to SNR < 2.5 in spw=10 at 2022/07/17/14:19:52.0
@@ -1647,39 +1647,39 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 # 4 of 41 solutions flagged due to SNR < 2.5 in spw=35 at 2022/07/22/14:17:05.3
 
 """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 
 """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 7
-# # 2022-12-12 17:58:43	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.377480983734, 'beamminor': 0.269453197717668, 'beampa': -9.022125244141, 'disk_flux': 106.10958340099475, 'peak_intensity': 4.532103426754475, 'rms': 23.12901527796564, 'SNR': 195.94882757814952}}
-#
-# os.system('mv *.last '+dir4lasts)
-# os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 7
+# 2022-12-12 17:58:43	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.377480983734, 'beamminor': 0.269453197717668, 'beampa': -9.022125244141, 'disk_flux': 106.10958340099475, 'peak_intensity': 4.532103426754475, 'rms': 23.12901527796564, 'SNR': 195.94882757814952}}
+
+os.system('mv *.last '+dir4lasts)
+os.system('cp -r '+outputvis+' '+outputvis.replace('.ms', '.keepsafe.ms'))
 
 
 
@@ -1688,44 +1688,44 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 ################ PERFORM 5th ROUND OF SELFCAL (AMPLITUDE+PHASE) #################
 """
 
-# inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p4.ms')
-# caltable          = inputvis.replace('p4.ms', 'ap.cal')
-# outputvis         = inputvis.replace('p4.ms', 'ap.ms')
-# dir4lasts         = outputvis.replace('.ms', '/')
-# os.system('mkdir '+dir4lasts)
-#
-# vis         = inputvis # input; these should be the same
-# parentvis   = inputvis # input; these should be the same
-# caltable    = caltable
-# gaintable   = [caltable]
-# gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
-# spw         = ''
-# refant      = data_dict['BB_concat']['refants_list']
-# calmode     = 'ap' # amplitude+phase
-# combine     = 'spw' # might need to be spw,scan and then 900s solint
-# solint      = 'inf' # to go up to scan length
-# spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
-# applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
-# minsnr      = 3. # raise this
-# minblperant = 4
-# interp      = 'linearPD' # PD is overkill but it's fine
-# calwt       = True
-# solnorm     = False # I don't know why we're doing this but we are because DSHARP does; default is False anyway
+inputvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'p4.ms')
+caltable          = inputvis.replace('p4.ms', 'ap.cal')
+outputvis         = inputvis.replace('p4.ms', 'ap.ms')
+dir4lasts         = outputvis.replace('.ms', '/')
+os.system('mkdir '+dir4lasts)
+
+vis         = inputvis # input; these should be the same
+parentvis   = inputvis # input; these should be the same
+caltable    = caltable
+gaintable   = [caltable]
+gaintype    = 'T' # could've used 'G', we only have 1 polarization mode
+spw         = ''
+refant      = data_dict['BB_concat']['refants_list']
+calmode     = 'ap' # amplitude+phase
+combine     = 'spw' # might need to be spw,scan and then 900s solint
+solint      = 'inf' # to go up to scan length
+spwmap      = [0,0,0,0,0, 5,5,5,5,5, 10,10,10,10,10, 15,15,15,15,15, 20,20,20,20,20, 25,25,25,25,25, 30,30,30,30,30, 35,35,35,35,35] # since we did combine=spw, still we need a spwmap.
+applymode   = 'calonly' # default is 'calflag', which applies solns and flags those with SNR<minSNR. Here we follow DSHARP and don't flag those with SNR<mnSNR; use with extreme caution
+minsnr      = 3. # raise this
+minblperant = 4
+interp      = 'linearPD' # PD is overkill but it's fine
+calwt       = True
+solnorm     = False # I don't know why we're doing this but we are because DSHARP does; default is False anyway
 
 """ Generate the solutions """
-# os.system('rm -rf ' + caltable)
-# gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-#         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-#         minblperant=minblperant, solnorm=solnorm)
-# for observation in data_dict['BB_concat']['observations']:
-#     for quantity in ['phase', 'amp', 'SNR']:
-#         plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                spw=spw, observation=observation, combine=combine, calmode=calmode)
-#         for bool in [False, True]:
-#             plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-#                                    plot_average_soln=bool, solint=solint, minsnr=minsnr,
-#                                    spw=spw, observation=observation, combine=combine, calmode=calmode)
+os.system('rm -rf ' + caltable)
+gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+        calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+        minblperant=minblperant, solnorm=solnorm)
+for observation in data_dict['BB_concat']['observations']:
+    for quantity in ['phase', 'amp', 'SNR']:
+        plot_gaincal_solutions_per_antenna(caltable=caltable, parentvis=vis, quantity=quantity,
+                               plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                               spw=spw, observation=observation, combine=combine, calmode=calmode)
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation=observation, combine=combine, calmode=calmode)
 # 3 of 41 solutions flagged due to SNR < 3 in spw=10 at 2022/07/17/14:31:53.5
 # 2 of 41 solutions flagged due to SNR < 3 in spw=10 at 2022/07/17/14:49:50.6
 # 3 of 41 solutions flagged due to SNR < 3 in spw=10 at 2022/07/17/14:53:44.8
@@ -1826,37 +1826,37 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 
 
 """ Apply the solutions - Note: since we did combine=spw in gaincal, now we need a spwmap"""
-# applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-# os.system('rm -rf ' + outputvis)
-# split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+os.system('rm -rf ' + outputvis)
+split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 
 """ Image the results; check the resulting map """
-# # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# tclean_wrapper(vis          = outputvis,
-#               imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0mJy',
-#               interactive   = True,
-#               savemodel     = 'modelcolumn')
-# # number (interactive) iterations performed: 7
-# # 2022-12-12 20:02:30	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
-#
-# imagename         = outputvis.replace('.ms', '.fits')
-# image_metrics     = estimate_image_metrics(imagename      = imagename,
-#                                            disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
-#                                            noise_mask     = noise_annulus)
-# selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
-#                                         EB            = 'BB_concat',
-#                                         image_metrics = image_metrics)
-# print("selfcal_dict: ", selfcal_dict)
-# # selfcal_dict:  {'BB_concat': {'beammajor': 0.36318364739424003, 'beamminor': 0.258013367652888, 'beampa': -10.19715881348, 'disk_flux': 102.58159634227913, 'peak_intensity': 4.15557948872447, 'rms': 20.21376952048342, 'SNR': 205.58162021751832}}
-# os.system('mv *.last '+dir4lasts)
+# Interactively shallowly clean, and save the result to the _initcont_model.ms model column
+tclean_wrapper(vis          = outputvis,
+              imagename     = outputvis.replace('.ms', ''), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 1.0, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0mJy',
+              interactive   = True,
+              savemodel     = 'modelcolumn')
+# number (interactive) iterations performed: 7
+# 2022-12-12 20:02:30	WARN	tclean::::casa	Warning! Non-zero values at the edge of the .pb image can cause unexpected aliasing effects! (found value 0.6844037175178528 at index [1996, 983, 0, 0])
+
+imagename         = outputvis.replace('.ms', '.fits')
+image_metrics     = estimate_image_metrics(imagename      = imagename,
+                                           disk_mask      = SB_mask, # a bit big for the LB EBs, but it's fine
+                                           noise_mask     = noise_annulus)
+selfcal_dict      = update_selfcal_dict(save_dir      = dir4lasts,
+                                        EB            = 'BB_concat',
+                                        image_metrics = image_metrics)
+print("selfcal_dict: ", selfcal_dict)
+# selfcal_dict:  {'BB_concat': {'beammajor': 0.36318364739424003, 'beamminor': 0.258013367652888, 'beampa': -10.19715881348, 'disk_flux': 102.58159634227913, 'peak_intensity': 4.15557948872447, 'rms': 20.21376952048342, 'SNR': 205.58162021751832}}
+os.system('mv *.last '+dir4lasts)
 
 
 """
@@ -1867,35 +1867,35 @@ We switch to casa 6.4.1-12-pipeline-2022.2.0.64
 
 
 """ Save the final MS """
-# chosenvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'ap.ms')
-# final_cont_ms      = 'ABAur_continuum.bin30s.ms'
-# split(vis=chosenvis, outputvis=final_cont_ms, spw='', timebin='30s', datacolumn='data')
-# listobs(vis=final_cont_ms, listfile=final_cont_ms+'.listobs.txt')
-# os.system('tar cvzf backups/' + final_cont_ms+'.tgz ' + final_cont_ms)
+chosenvis          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0'].replace('p0.ms', 'ap.ms')
+final_cont_ms      = 'ABAur_continuum.bin30s.ms'
+split(vis=chosenvis, outputvis=final_cont_ms, spw='', timebin='30s', datacolumn='data')
+listobs(vis=final_cont_ms, listfile=final_cont_ms+'.listobs.txt')
+os.system('tar cvzf backups/' + final_cont_ms+'.tgz ' + final_cont_ms)
 
 
 """ Image the final MS """
-# continuum       = data_dict['NRAO_path']+data_dict['continuum']
-# LB_cellsize     = '0.01arcsec' # samples beam ~10 times
-# LB_imsize       = 2000 # to image FOV of 20 arcsec (radius)
-#
-# """ Define simple masks and clean scales for imaging """
-# mask_diam   = 2. 	# diameter of mask in arcsec; for LB data (SB data needs to be bigger)
-# mask_ra     = '04h55m45.8524s' # roughly; estimated in CARTA/DS9
-# mask_dec    = '+30.33.03.755'  # roughly; estimated in CARTA/DS9
-# SB_mask     = 'circle[[%s, %s], %.1farcsec]' %(mask_ra, mask_dec, mask_diam+0.8)
-#
-# tclean_wrapper(vis          = continuum,
-#               imagename     = continuum.replace('.ms', '_robust05'), # will become .image, .residual, etc
-#               mask          = SB_mask,
-#               imsize        = LB_imsize,
-#               cellsize      = LB_cellsize,
-#               robust        = 0.5, # raise this from 0.5 to increase SNR; we can image with lower robust later
-#               gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
-#               contspws      = '', # we want the model to include all spws
-#               threshold     = '0.08mJy',
-#               interactive   = False,
-#               savemodel     = 'modelcolumn')
+continuum       = data_dict['NRAO_path']+data_dict['continuum']
+LB_cellsize     = '0.01arcsec' # samples beam ~10 times
+LB_imsize       = 2000 # to image FOV of 20 arcsec (radius)
+
+""" Define simple masks and clean scales for imaging """
+mask_diam   = 2. 	# diameter of mask in arcsec; for LB data (SB data needs to be bigger)
+mask_ra     = '04h55m45.8524s' # roughly; estimated in CARTA/DS9
+mask_dec    = '+30.33.03.755'  # roughly; estimated in CARTA/DS9
+SB_mask     = 'circle[[%s, %s], %.1farcsec]' %(mask_ra, mask_dec, mask_diam+0.8)
+
+tclean_wrapper(vis          = continuum,
+              imagename     = continuum.replace('.ms', '_robust05'), # will become .image, .residual, etc
+              mask          = SB_mask,
+              imsize        = LB_imsize,
+              cellsize      = LB_cellsize,
+              robust        = 0.5, # raise this from 0.5 to increase SNR; we can image with lower robust later
+              gain          = 0.05, # nice and low; stops us from accidentally cleaning too deep between successive major cycles
+              contspws      = '', # we want the model to include all spws
+              threshold     = '0.08mJy',
+              interactive   = False,
+              savemodel     = 'modelcolumn')
 
 
 
@@ -1916,9 +1916,9 @@ SB_p5          = SB_p0.replace('p0.ms', 'p5.ms')
 SB_p6          = SB_p0.replace('p0.ms', 'p6.ms')
 SB_ap          = SB_p0.replace('p0.ms', 'ap.ms')
 
-# for msfile in [SB_p0, SB_p1, SB_p2, SB_p3, SB_p4, SB_p5, SB_p6, SB_ap]:
-#     print("Exporting "+msfile+" as .npz...")
-#     export_MS(msfile)
+for msfile in [SB_p0, SB_p1, SB_p2, SB_p3, SB_p4, SB_p5, SB_p6, SB_ap]:
+    print("Exporting "+msfile+" as .npz...")
+    export_MS(msfile)
 
 BB_p0          = data_dict['NRAO_path']+data_dict['BB_concat']['contp0']
 BB_p1          = BB_p0.replace('p0.ms', 'p1.ms')
@@ -1927,9 +1927,9 @@ BB_p3          = BB_p0.replace('p0.ms', 'p3.ms')
 BB_p4          = BB_p0.replace('p0.ms', 'p4.ms')
 BB_ap          = BB_p0.replace('p0.ms', 'ap.ms')
 
-# for msfile in [BB_p0, BB_p1, BB_p2, BB_p3, BB_p4, BB_ap]:
-#     print("Exporting "+msfile+" as .npz...")
-#     export_MS(msfile)
+for msfile in [BB_p0, BB_p1, BB_p2, BB_p3, BB_p4, BB_ap]:
+    print("Exporting "+msfile+" as .npz...")
+    export_MS(msfile)
 
 """ Assign rough emission geometry parameters. """
 PA, incl = 54, 23
@@ -2024,14 +2024,6 @@ PA, incl = 54, 23
 
 
 
-# regenerate SB ap plots; calmode on figure incorrect
-# spwmap for a+p selfcal of SB data and combine='', is incorrect...
-# save fits for the .model and .residual images?
-
-
-# impbcor(imagename=clean_imname+ext,pbimage=clean_imname+'.pb',
-#                     outfile=clean_imname+pbcor_ext,overwrite=True)
-#mode='divide' is the default
 
 
 

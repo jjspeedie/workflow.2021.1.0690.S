@@ -110,7 +110,7 @@ def tclean_wrapper_line(vis,
 
     print("WARNING! Using rms noise determined from a dirty image not actually made by this script...")
     rms = 1.6120597392183753 # mJy # This was determined in previous imaging round: SO/v11_robust1.5
-    print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms*1e3))
+    print("Estimated rms noise in the full FOV of the first 10 channels: %.2f mJy/beam"%(rms))
     threshold   = "%.8f" %(5.*rms)+'mJy'
 
 
@@ -187,7 +187,7 @@ def tclean_wrapper_line(vis,
         exportfits(imagename+ext, imagename+ext+'.fits', dropstokes=True, overwrite=True)
 
     print("Saving imaging metrics and image metrics...")
-    imaging_metrics = {'.dirty rms (mJy/beam)' : rms*1e3,
+    imaging_metrics = {'.dirty rms (mJy/beam)' : rms,
                        'tclean threshold' : threshold,
                        'JvM epsilon' : JvM_epsilon,
                        }

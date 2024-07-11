@@ -118,7 +118,7 @@ the lines.
 
 From the pipeline-generated cubes, AB Aur seems to have a system velocity of ~5.8 km/s.
 After trying what MAPS did (velocity_range = -10 km/s to 20 km/s), that looks to
-remove too much data (the range is too wide...), to my eyes. We want as large a
+remove too much data (the range is too wide...) to my eyes. We want as large a
 bandwidth as possible, for high SNR for per-spw selfcal later.
 As such, I've done custom velocity ranges.
 
@@ -127,34 +127,34 @@ Possible improvement: Make dirty image cubes for all EBs and all spws, and ident
         (1) Time considerations.
 '''
 
-# """ Print to terminal and a file at the same time """
-# old_print   = print
-# log_file    = open('./workflow/step1/printlog.log', "w")
-# print       = lambda *args, **kw: old_print(*args, **kw) or old_print(*args, file=log_file, **kw)
-# print('Executing step1_prepare_continuum.py')
-#
-#
-# print('\nPerforming spectral averaging of the continuum...') # takes about 38 mins per EB
-# for EB in data_dict['EBs']:
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['.ms.split.cal.source']
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     print('inputvis = ', inputvis)
-#     print('outputvis = ', outputvis)
-#
-#     flagchannels_string = get_flagchannels(ms_file          = inputvis,
-#                                            ms_dict          = data_dict[EB],
-#                                            velocity_range   = data_dict[EB]['velocity_ranges'])
-#     print('\nFor '+EB+', flagchannels_string = ', flagchannels_string)
-#
-#     avg_cont(msfile         = inputvis,
-#             outputvis       = outputvis,
-#             flagchannels    = flagchannels_string,
-#             contspws        = data_dict[EB]['cont_spws'],
-#             width_array     = data_dict[EB]['width_array'],
-#             datacolumn      = 'data',
-#             field           = 'AB_Aur')
-#
-# log_file.close()
+""" Print to terminal and a file at the same time """
+old_print   = print
+log_file    = open('./workflow/step1/printlog.log', "w")
+print       = lambda *args, **kw: old_print(*args, **kw) or old_print(*args, file=log_file, **kw)
+print('Executing step1_prepare_continuum.py')
+
+
+print('\nPerforming spectral averaging of the continuum...') # takes about 38 mins per EB
+for EB in data_dict['EBs']:
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['.ms.split.cal.source']
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    print('inputvis = ', inputvis)
+    print('outputvis = ', outputvis)
+
+    flagchannels_string = get_flagchannels(ms_file          = inputvis,
+                                           ms_dict          = data_dict[EB],
+                                           velocity_range   = data_dict[EB]['velocity_ranges'])
+    print('\nFor '+EB+', flagchannels_string = ', flagchannels_string)
+
+    avg_cont(msfile         = inputvis,
+            outputvis       = outputvis,
+            flagchannels    = flagchannels_string,
+            contspws        = data_dict[EB]['cont_spws'],
+            width_array     = data_dict[EB]['width_array'],
+            datacolumn      = 'data',
+            field           = 'AB_Aur')
+
+log_file.close()
 
 """
 ######################################################
@@ -187,26 +187,26 @@ SB_scales   = [0, 5, 10, 20, 40] # max scale ~ LAS ~ outer ring edge ~ 1.5 arcse
 LB_scales   = [0, 5, 30, 80, 150] # max scale ~ LAS ~ outer ring edge ~ 1.5 arcsec; min scale = delta function
 
 """ Image each execution block individually, as well as per-spw images """ # gain=0.1, which is a bit high for images that matter
-# for EB in data_dict['SB_EBs']:
-#     image_each_obs(ms_dict      = data_dict[EB],
-#                    inputvis     = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms'],
-#                    mask         = SB_mask,
-#                    scales       = SB_scales,
-#                    imsize       = SB_imsize,
-#                    cellsize     = SB_cellsize,
-#                    contspws     = data_dict[EB]['cont_spws'],
-#                    # threshold    = '0.0mJy', # this is taken care of inside image_each_obs
-#                    interactive  = False)
-# for EB in data_dict['LB_EBs']:
-#     image_each_obs(ms_dict      = data_dict[EB],
-#                    inputvis     = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms'],
-#                    mask         = LB_mask,
-#                    scales       = LB_scales,
-#                    imsize       = LB_imsize,
-#                    cellsize     = LB_cellsize,
-#                    contspws     = data_dict[EB]['cont_spws'],
-#                    # threshold    = '0.0mJy', # this is taken care of inside image_each_obs
-#                    interactive  = False)
+for EB in data_dict['SB_EBs']:
+    image_each_obs(ms_dict      = data_dict[EB],
+                   inputvis     = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms'],
+                   mask         = SB_mask,
+                   scales       = SB_scales,
+                   imsize       = SB_imsize,
+                   cellsize     = SB_cellsize,
+                   contspws     = data_dict[EB]['cont_spws'],
+                   # threshold    = '0.0mJy', # this is taken care of inside image_each_obs
+                   interactive  = False)
+for EB in data_dict['LB_EBs']:
+    image_each_obs(ms_dict      = data_dict[EB],
+                   inputvis     = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms'],
+                   mask         = LB_mask,
+                   scales       = LB_scales,
+                   imsize       = LB_imsize,
+                   cellsize     = LB_cellsize,
+                   contspws     = data_dict[EB]['cont_spws'],
+                   # threshold    = '0.0mJy', # this is taken care of inside image_each_obs
+                   interactive  = False)
 
 
 """
@@ -254,43 +254,43 @@ selfcal_dict = {}
 
 # Create copies of _initcont.ms called _initcont_model.ms, whose model column
 # will become the starting model for the self calibration
-# for EB in data_dict['EBs']:
-#     initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     initcont_model  = initcont.replace('.ms', '_model.ms')
-#     print("Making a copy of "+initcont+" and saving it to "+initcont_model)
-#     os.system('rm -rf '+initcont_model)
-#     os.system('cp -r '+initcont+' '+initcont_model)
+for EB in data_dict['EBs']:
+    initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    initcont_model  = initcont.replace('.ms', '_model.ms')
+    print("Making a copy of "+initcont+" and saving it to "+initcont_model)
+    os.system('rm -rf '+initcont_model)
+    os.system('cp -r '+initcont+' '+initcont_model)
 
 
 # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# for EB in data_dict['SB_EBs']:
-#     initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     initcont_model  = initcont.replace('.ms', '_model.ms')
-#     tclean_wrapper(vis          = initcont_model,
-#                   imagename     = initcont_model.replace('.ms', ''), # will become .image, .residual, etc
-#                   mask          = SB_mask,
-#                   imsize        = SB_imsize,
-#                   cellsize      = SB_cellsize,
-#                   gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
-#                   contspws      = '', # we want the model to include all spws
-#                   threshold     = '0mJy',
-#                   interactive   = True,
-#                   savemodel     = 'modelcolumn')
+for EB in data_dict['SB_EBs']:
+    initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    initcont_model  = initcont.replace('.ms', '_model.ms')
+    tclean_wrapper(vis          = initcont_model,
+                  imagename     = initcont_model.replace('.ms', ''), # will become .image, .residual, etc
+                  mask          = SB_mask,
+                  imsize        = SB_imsize,
+                  cellsize      = SB_cellsize,
+                  gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
+                  contspws      = '', # we want the model to include all spws
+                  threshold     = '0mJy',
+                  interactive   = True,
+                  savemodel     = 'modelcolumn')
 # SB_EB1: number (interactive) iterations performed: 2
 # SB_EB2: number (interactive) iterations performed: 2
-# for EB in data_dict['LB_EBs']:
-#     initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     initcont_model  = initcont.replace('.ms', '_model.ms')
-#     tclean_wrapper(vis          = initcont_model,
-#                   imagename     = initcont_model.replace('.ms', ''), # will become .image, .residual, etc
-#                   mask          = LB_mask,
-#                   imsize        = LB_imsize,
-#                   cellsize      = LB_cellsize,
-#                   gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
-#                   contspws      = '', # we want the model to include all spws
-#                   threshold     = '0mJy',
-#                   interactive   = True,
-#                   savemodel     = 'modelcolumn')
+for EB in data_dict['LB_EBs']:
+    initcont        = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    initcont_model  = initcont.replace('.ms', '_model.ms')
+    tclean_wrapper(vis          = initcont_model,
+                  imagename     = initcont_model.replace('.ms', ''), # will become .image, .residual, etc
+                  mask          = LB_mask,
+                  imsize        = LB_imsize,
+                  cellsize      = LB_cellsize,
+                  gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
+                  contspws      = '', # we want the model to include all spws
+                  threshold     = '0mJy',
+                  interactive   = True,
+                  savemodel     = 'modelcolumn')
 # LB_EB1: number (interactive) iterations performed: 2
 # LB_EB2: number (interactive) iterations performed: 1
 # LB_EB3: number (interactive) iterations performed: 1
@@ -343,20 +343,20 @@ for EB in data_dict['EBs']:
     calwt       = True
 
     """ Generate the solutions """
-    # os.system('touch ' + caltable + '.printlog.log') # can paste printout of number of failed solutions in here later
-    # os.system('rm -rf ' + caltable)
-    # gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
-    #         calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
-    #         minblperant=minblperant)
-    # for quantity in ['phase', 'amp', 'SNR']:
-    #     for bool in [False, True]:
-    #         plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
-    #                                plot_average_soln=bool, solint=solint, minsnr=minsnr,
-    #                                spw=spw, observation='0', combine=combine)
+    os.system('touch ' + caltable + '.printlog.log') # can paste printout of number of failed solutions in here later
+    os.system('rm -rf ' + caltable)
+    gaincal(vis=vis,caltable=caltable,gaintype=gaintype, spw=spw, refant=refant,
+            calmode=calmode, combine=combine, solint=solint, minsnr=minsnr,
+            minblperant=minblperant)
+    for quantity in ['phase', 'amp', 'SNR']:
+        for bool in [False, True]:
+            plot_gaincal_solutions(caltable=caltable, parentvis=vis, quantity=quantity,
+                                   plot_average_soln=bool, solint=solint, minsnr=minsnr,
+                                   spw=spw, observation='0', combine=combine)
     """ Apply the solutions """
-    # applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
-    # os.system('rm -rf ' + outputvis)
-    # split(vis=vis, outputvis=outputvis, datacolumn='corrected')
+    applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp,  calwt=calwt)
+    os.system('rm -rf ' + outputvis)
+    split(vis=vis, outputvis=outputvis, datacolumn='corrected')
 
 # SB_EB1: No failed solns
 # SB_EB2:
@@ -399,34 +399,34 @@ for EB in data_dict['EBs']:
 
 """ Image the results; check the resulting map """
 # Interactively shallowly clean, and save the result to the _initcont_model.ms model column
-# for EB in data_dict['SB_EBs']:
-#     initcont          = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     initcont_selfcal  = initcont.replace('.ms', '_selfcal.ms')
-#     tclean_wrapper(vis          = initcont_selfcal,
-#                   imagename     = initcont_selfcal.replace('.ms', ''), # will become .image, .residual, etc
-#                   mask          = SB_mask,
-#                   imsize        = SB_imsize,
-#                   cellsize      = SB_cellsize,
-#                   gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
-#                   contspws      = '', # we want the model to include all spws
-#                   threshold     = '0mJy',
-#                   interactive   = True,
-#                   savemodel     = 'modelcolumn')
-# # SB_EB1: number (interactive) iterations performed: 3
-# # SB_EB2: number (interactive) iterations performed: 3
-# for EB in data_dict['LB_EBs']:
-#     initcont          = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
-#     initcont_selfcal  = initcont.replace('.ms', '_selfcal.ms')
-#     tclean_wrapper(vis          = initcont_selfcal,
-#                   imagename     = initcont_selfcal.replace('.ms', ''), # will become .image, .residual, etc
-#                   mask          = LB_mask,
-#                   imsize        = LB_imsize,
-#                   cellsize      = LB_cellsize,
-#                   gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
-#                   contspws      = '', # we want the model to include all spws
-#                   threshold     = '0mJy',
-#                   interactive   = True,
-#                   savemodel     = 'modelcolumn')
+for EB in data_dict['SB_EBs']:
+    initcont          = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    initcont_selfcal  = initcont.replace('.ms', '_selfcal.ms')
+    tclean_wrapper(vis          = initcont_selfcal,
+                  imagename     = initcont_selfcal.replace('.ms', ''), # will become .image, .residual, etc
+                  mask          = SB_mask,
+                  imsize        = SB_imsize,
+                  cellsize      = SB_cellsize,
+                  gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
+                  contspws      = '', # we want the model to include all spws
+                  threshold     = '0mJy',
+                  interactive   = True,
+                  savemodel     = 'modelcolumn')
+# SB_EB1: number (interactive) iterations performed: 3
+# SB_EB2: number (interactive) iterations performed: 3
+for EB in data_dict['LB_EBs']:
+    initcont          = data_dict['NRAO_path']+data_dict[EB]['_initcont.ms']
+    initcont_selfcal  = initcont.replace('.ms', '_selfcal.ms')
+    tclean_wrapper(vis          = initcont_selfcal,
+                  imagename     = initcont_selfcal.replace('.ms', ''), # will become .image, .residual, etc
+                  mask          = LB_mask,
+                  imsize        = LB_imsize,
+                  cellsize      = LB_cellsize,
+                  gain          = 0.05, # nice and low this time; stops us from accidentally cleaning too deep between successive major cycles
+                  contspws      = '', # we want the model to include all spws
+                  threshold     = '0mJy',
+                  interactive   = True,
+                  savemodel     = 'modelcolumn')
 # LB_EB1: number (interactive) iterations performed: 3
 # LB_EB2: number (interactive) iterations performed: 1
 # LB_EB3: number (interactive) iterations performed: 2

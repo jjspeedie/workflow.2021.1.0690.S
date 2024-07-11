@@ -111,23 +111,23 @@ self calibration to fix them.
 ######################################################
 """
 
-# print('\nSplitting out the line spectral windows, with the continuum spw averaged down...')
-# for EB in data_dict['EBs']:
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['.ms.split.cal.source']
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines.ms']
-#     print('inputvis = ', inputvis)
-#     print('outputvis = ', outputvis)
-#
-#     os.system('rm -rf '+outputvis)
-#     split(vis         = inputvis,
-#           field       = 'AB_Aur',
-#           spw         = data_dict[EB]['cont_spws'], # in hindsight, poorly named; this is all spws
-#           outputvis   = outputvis,
-#           width       = data_dict[EB]['line_width_array'], # averages the cont spw (0) down to 1 channel
-#           datacolumn  = 'data',
-#           keepflags   = False)
-#     print("Spetrally averaged continuum dataset saved to %s" % outputvis)
-#     listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+print('\nSplitting out the line spectral windows, with the continuum spw averaged down...')
+for EB in data_dict['EBs']:
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['.ms.split.cal.source']
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines.ms']
+    print('inputvis = ', inputvis)
+    print('outputvis = ', outputvis)
+
+    os.system('rm -rf '+outputvis)
+    split(vis         = inputvis,
+          field       = 'AB_Aur',
+          spw         = data_dict[EB]['cont_spws'], # in hindsight, poorly named; this is all spws
+          outputvis   = outputvis,
+          width       = data_dict[EB]['line_width_array'], # averages the cont spw (0) down to 1 channel
+          datacolumn  = 'data',
+          keepflags   = False)
+    print("Spectrally averaged continuum dataset saved to %s" % outputvis)
+    listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
 
 
 """
@@ -263,33 +263,33 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
 ####################################################
 """
 # this takes ~1hr per EB (so 2hr total)
-# for EB in data_dict['SB_EBs']:
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_shift.ms']
-#     os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms'))
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_SBselfcal.ms'] # half selfcal
-#     dir4lasts           = outputvis.replace('.ms', '/')
-#     os.system('mkdir '+dir4lasts)
-#
-#     vis         = inputvis
-#     gaintable   = data_dict['SB_selfcaltables']
-#     spw         = ''
-#     spwmap      = data_dict[EB]['SB_selfcaltables_spwmap']
-#     applymode   = 'calflag' # SB EB1: 9% of data flagged; SB EB2: 51% of data flagged
-#     interp      = ['linearPD' for gaintab in gaintable]
-#     calwt       = True
-#
-#     applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-#
-#     os.system('rm -rf ' + outputvis)
-#     split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False)
-#     listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
-#
-#     for spwi in data_dict[EB]['line_spws']:
-#         plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#         plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#
-#     os.system('mv *.last '+dir4lasts)
-#     os.system('rm -rf ' + inputvis)
+for EB in data_dict['SB_EBs']:
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_shift.ms']
+    os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms'))
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_SBselfcal.ms'] # half selfcal
+    dir4lasts           = outputvis.replace('.ms', '/')
+    os.system('mkdir '+dir4lasts)
+
+    vis         = inputvis
+    gaintable   = data_dict['SB_selfcaltables']
+    spw         = ''
+    spwmap      = data_dict[EB]['SB_selfcaltables_spwmap']
+    applymode   = 'calflag'
+    interp      = ['linearPD' for gaintab in gaintable]
+    calwt       = True
+
+    applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+
+    os.system('rm -rf ' + outputvis)
+    split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False)
+    listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+
+    for spwi in data_dict[EB]['line_spws']:
+        plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+        plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+
+    os.system('mv *.last '+dir4lasts)
+    os.system('rm -rf ' + inputvis)
 
 
 """
@@ -299,33 +299,33 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
 """
 
 # this takes ~40min per EB (so 1hr20min total)
-# for EB in data_dict['SB_EBs']:
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_SBselfcal.ms'] # start with the "half selfcal" (SBcaltable-selfcal'ed SB data)
-#     os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms'))
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'] # full selfcal
-#     dir4lasts           = outputvis.replace('.ms', '/')
-#     os.system('mkdir '+dir4lasts)
-#
-#     vis         = inputvis
-#     gaintable   = data_dict['BB_selfcaltables']
-#     spw         = ''
-#     spwmap      = data_dict[EB]['BB_selfcaltables_spwmap']
-#     applymode   = 'calonly' # 0% of data flagged
-#     interp      = ['linearPD' for gaintab in gaintable]
-#     calwt       = True
-#
-#     applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-#
-#     os.system('rm -rf ' + outputvis)
-#     split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False, timebin='30s') # time average now to save space
-#     listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
-#
-#     for spwi in data_dict[EB]['line_spws']:
-#         plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#         plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#
-#     os.system('mv *.last '+dir4lasts)
-#     os.system('rm -rf ' + inputvis)
+for EB in data_dict['SB_EBs']:
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_SBselfcal.ms'] # start with the "half selfcal" (SBcaltable-selfcal'ed SB data)
+    os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms'))
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'] # full selfcal
+    dir4lasts           = outputvis.replace('.ms', '/')
+    os.system('mkdir '+dir4lasts)
+
+    vis         = inputvis
+    gaintable   = data_dict['BB_selfcaltables']
+    spw         = ''
+    spwmap      = data_dict[EB]['BB_selfcaltables_spwmap']
+    applymode   = 'calonly' # 0% of data flagged
+    interp      = ['linearPD' for gaintab in gaintable]
+    calwt       = True
+
+    applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+
+    os.system('rm -rf ' + outputvis)
+    split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False, timebin='30s') # time average now to save space
+    listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+
+    for spwi in data_dict[EB]['line_spws']:
+        plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+        plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+
+    os.system('mv *.last '+dir4lasts)
+    os.system('rm -rf ' + inputvis)
 
 
 
@@ -336,34 +336,34 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
 ####################################################
 """
 # 1hr 10min per EB
-# for EB in data_dict['LB_EBs']:
-#     print('/n--> Working on ', EB)
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_shift.ms']
-#     # os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms')) # too much space
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
-#     dir4lasts           = outputvis.replace('.ms', '/')
-#     os.system('mkdir '+dir4lasts)
-#
-#     vis         = inputvis
-#     gaintable   = data_dict['BB_selfcaltables']
-#     spw         = ''
-#     spwmap      = data_dict[EB]['BB_selfcaltables_spwmap']
-#     applymode   = 'calonly' # 0% of data will be flagged
-#     interp      = ['linearPD' for gaintab in gaintable]
-#     calwt       = True
-#
-#     applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
-#
-#     os.system('rm -rf ' + outputvis)
-#     split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False, timebin='30s') # time average now to save space
-#     listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
-#
-#     for spwi in data_dict[EB]['line_spws']:
-#         plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#         plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
-#
-#     os.system('mv *.last '+dir4lasts)
-#     os.system('rm -rf ' + inputvis)
+for EB in data_dict['LB_EBs']:
+    print('/n--> Working on ', EB)
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_shift.ms']
+    # os.system('cp -r '+inputvis+' '+inputvis.replace('.ms', '.keepsafe.ms')) # too much space
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
+    dir4lasts           = outputvis.replace('.ms', '/')
+    os.system('mkdir '+dir4lasts)
+
+    vis         = inputvis
+    gaintable   = data_dict['BB_selfcaltables']
+    spw         = ''
+    spwmap      = data_dict[EB]['BB_selfcaltables_spwmap']
+    applymode   = 'calonly' # 0% of data will be flagged
+    interp      = ['linearPD' for gaintab in gaintable]
+    calwt       = True
+
+    applycal(vis=vis, spw=spw, gaintable=gaintable, interp=interp, applymode=applymode, calwt=calwt, spwmap=spwmap)
+
+    os.system('rm -rf ' + outputvis)
+    split(vis=vis, outputvis=outputvis, datacolumn='corrected', keepflags=False, timebin='30s') # time average now to save space
+    listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+
+    for spwi in data_dict[EB]['line_spws']:
+        plotms(vis=inputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=inputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+        plotms(vis=outputvis, yaxis='amp', xaxis='UVdist', avgtime='1e8', spw=str(spwi), plotfile=outputvis+'_amp-vs-UVdist_spw'+str(spwi)+'.png', showgui=False, ydatacolumn='data', overwrite=True)
+
+    os.system('mv *.last '+dir4lasts)
+    os.system('rm -rf ' + inputvis)
 
 
 """
@@ -372,20 +372,20 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
 ####################################################
 """
 
-# for EB in data_dict['EBs']: # this takes 1hr10min per LB EB
-#     inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
-#     outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub']
-#     spw                 = '1, 2, 3, 4' # only line spws; they will be renumbered 0,1,2,3
-#     combine             = '' # break at scan, field, and spw
-#     fitorder            = 1 # order of polynomial fit; default is 0; DSHARP uses 1 so we copy them
-#     solint              = 'int' # Timescale for per-baseline fit. default (recommended): ‘int’, i.e. no time averaging, do a fit for each integration and let the noisy fits average out in the image.continuum
-#     excludechans        = False # the channels in fitspw will be used to fit the continuum
-#     want_cont           = False # we don't need another ms to hold the continuum estimate
-#
-#     flagchannels_string = get_flagchannels(ms_file          = inputvis,
-#                                            ms_dict          = data_dict[EB],
-#                                            velocity_range   = data_dict[EB]['velocity_ranges'])
-#     fitspw = au.invertChannelRanges(flagchannels_string, vis=inputvis)
+for EB in data_dict['EBs']: # this takes 1hr10min per LB EB
+    inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
+    outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub']
+    spw                 = '1, 2, 3, 4' # only line spws; they will be renumbered 0,1,2,3
+    combine             = '' # break at scan, field, and spw
+    fitorder            = 1 # order of polynomial fit; default is 0; DSHARP uses 1 so we copy them
+    solint              = 'int' # Timescale for per-baseline fit. default (recommended): ‘int’, i.e. no time averaging, do a fit for each integration and let the noisy fits average out in the image.continuum
+    excludechans        = False # the channels in fitspw will be used to fit the continuum
+    want_cont           = False # we don't need another ms to hold the continuum estimate
+
+    flagchannels_string = get_flagchannels(ms_file          = inputvis,
+                                           ms_dict          = data_dict[EB],
+                                           velocity_range   = data_dict[EB]['velocity_ranges'])
+    fitspw = au.invertChannelRanges(flagchannels_string, vis=inputvis)
     # Flagchannels input string for SB_EB1: '1:517~589,       2:504~600,       3:961~1251,        4:556~1059'
     #                               fitspw:  1:0~516;590~959, 2:0~503;601~959, 3:0~960;1252~1919, 4:0~555;1060~1919
     # Flagchannels input string for SB_EB2: '1:517~589,       2:504~600,       3:962~1251,        4:554~1058'
@@ -403,14 +403,14 @@ To apply all BB caltables to LB6, gaintable=[BB_contp1.cal,    BB_contp2.cal,   
     # Flagchannels input string for LB_EB6: '1:517~589,       2:505~601,       3:960~1249,        4:553~1057'
     #                               fitspw:  1:0~516;590~959, 2:0~504;602~959, 3:0~959;1250~1919, 4:0~552;1058~1919
 
-    # os.system('rm -rf ' + outputvis)
-    # uvcontsub(vis=inputvis, spw=spw, combine=combine, fitorder=fitorder,
-    #                    solint=solint, excludechans=excludechans, want_cont=want_cont,
-    #                    fitspw=fitspw)
-    # listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
-    # for spwi in data_dict[EB]['line_spws']:
-    #     plotms(vis=inputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi), plotfile=inputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
-    #     plotms(vis=outputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi-1), plotfile=outputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
+    os.system('rm -rf ' + outputvis)
+    uvcontsub(vis=inputvis, spw=spw, combine=combine, fitorder=fitorder,
+                       solint=solint, excludechans=excludechans, want_cont=want_cont,
+                       fitspw=fitspw)
+    listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+    for spwi in data_dict[EB]['line_spws']:
+        plotms(vis=inputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi), plotfile=inputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
+        plotms(vis=outputvis, yaxis='amp', xaxis='channel', avgtime='1e8', avgspw=False, avgscan=True, avgbaseline=True, spw=str(spwi-1), plotfile=outputvis+'_amp-vs-channel_spw'+str(spwi)+'.png', showgui=False, overwrite=True)
 
 
 
@@ -426,24 +426,24 @@ But as we later would like to image on an arbitrary velocity regrid, we will not
 do any regridding. """
 
 """ First do non-continuum-subtracted ms's (contains spws 0,1,2,3,4) """
-# for EB in data_dict['EBs']:
-#     for i,spwi in enumerate(['1', '2', '3', '4']):
-#         inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
-#         outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(i)+'.ms') # want i instead of spwi to align with contsub indexing
-#
-#         os.system('rm -rf ' + outputvis)
-#         split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 1,2,3,4
-#         listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+for EB in data_dict['EBs']:
+    for i,spwi in enumerate(['1', '2', '3', '4']):
+        inputvis            = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms']
+        outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(i)+'.ms') # want i instead of spwi to align with contsub indexing
+
+        os.system('rm -rf ' + outputvis)
+        split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 1,2,3,4
+        listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
 
 """ Second do continuum-subtracted ms's (contains spws 0,1,2,3) """
-# for EB in data_dict['EBs']:
-#     for i,spwi in enumerate(['0', '1', '2', '3']):
-#         inputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub']
-#         outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub'].replace('.ms', '_spw'+spwi+'.ms') # want spwi now
-#
-#         os.system('rm -rf ' + outputvis)
-#         split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 0,1,2,3
-#         listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
+for EB in data_dict['EBs']:
+    for i,spwi in enumerate(['0', '1', '2', '3']):
+        inputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub']
+        outputvis           = data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms.contsub'].replace('.ms', '_spw'+spwi+'.ms') # want spwi now
+
+        os.system('rm -rf ' + outputvis)
+        split(vis=inputvis, outputvis=outputvis, spw=spwi, datacolumn='data') # here, spws are indexed 0,1,2,3
+        listobs(vis=outputvis, listfile=outputvis+'.listobs.txt')
 
 
 """
@@ -454,45 +454,45 @@ do any regridding. """
 molecules = ['SO', 'C18O', '13CO', '12CO']
 
 """ First do non-continuum-subtracted ms's """
-# for spwi,molecule in enumerate(molecules):
-#     ms_list_to_concatenate = []
-#     for EB in data_dict['EBs']:
-#         ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms'))
-#
-#     print('For molecule: ', molecule)
-#     print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
-#
-#     final_line_ms = 'ABAur_'+molecule+'.bin30s.ms'
-#
-#     os.system('rm -rf %s*' % final_line_ms)
-#     concat(vis          = ms_list_to_concatenate,
-#            concatvis    = final_line_ms,
-#            dirtol       = '0.1arcsec',
-#            copypointing = False)
-#     listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
-#     os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+for spwi,molecule in enumerate(molecules):
+    ms_list_to_concatenate = []
+    for EB in data_dict['EBs']:
+        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms'))
+
+    print('For molecule: ', molecule)
+    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+
+    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms'
+
+    os.system('rm -rf %s*' % final_line_ms)
+    concat(vis          = ms_list_to_concatenate,
+           concatvis    = final_line_ms,
+           dirtol       = '0.1arcsec',
+           copypointing = False)
+    listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
 
 
 """ Second do continuum-subtracted ms's (contains spws 0,1,2,3) """
-# for spwi,molecule in enumerate(molecules):
-#     ms_list_to_concatenate = []
-#     for EB in data_dict['EBs']:
-#         ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms')+'.contsub')
-#
-#     print('For molecule: ', molecule)
-#     print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
-#
-#     final_line_ms = 'ABAur_'+molecule+'.bin30s.ms.contsub'
-#
-#     os.system('rm -rf %s*' % final_line_ms)
-#     concat(vis          = ms_list_to_concatenate,
-#            concatvis    = final_line_ms,
-#            dirtol       = '0.1arcsec',
-#            copypointing = False)
-#     listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
-#     os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
-#
-# os.system('mv ABAur*.tgz backups/')
+for spwi,molecule in enumerate(molecules):
+    ms_list_to_concatenate = []
+    for EB in data_dict['EBs']:
+        ms_list_to_concatenate.append(data_dict['NRAO_path']+data_dict[EB]['_initlines_selfcal.ms'].replace('.ms', '_spw'+str(spwi)+'.ms')+'.contsub')
+
+    print('For molecule: ', molecule)
+    print('Combining spectral window '+str(spwi)+' across these measurement sets:', ms_list_to_concatenate)
+
+    final_line_ms = 'ABAur_'+molecule+'.bin30s.ms.contsub'
+
+    os.system('rm -rf %s*' % final_line_ms)
+    concat(vis          = ms_list_to_concatenate,
+           concatvis    = final_line_ms,
+           dirtol       = '0.1arcsec',
+           copypointing = False)
+    listobs(vis=final_line_ms, listfile=final_line_ms+'.listobs.txt')
+    os.system('tar cvzf backups/' + final_line_ms+'.tgz ' + final_line_ms)
+
+os.system('mv ABAur*.tgz backups/')
 
 
 
@@ -503,7 +503,7 @@ molecules = ['SO', 'C18O', '13CO', '12CO']
 
 # BELOW THIS IS A REPEAT OF THE LAST TWO STEPS, BUT WITH CVEL2 APPLIED
 # ORIGINALLY PERFORMED ON DECEMBER 19 2022
-# REALIZED WE DO NOT WANT TO CVEL2 THE MS'S IN JANUARY 2023
+# REALIZED WE DO NOT WANT TO CVEL2 THE MS'S IN JANUARY 2023 (THANKS RICH!)
 
 
 

@@ -45,16 +45,16 @@ print('Continuum spectral window in all (ALL) execution blocks: ', continuum_spw
 
 alignment_npix = {'LB':2000,'SB':500}
 alignment_cell_size = {'LB':0.01,'SB':0.04}
-# alignment_npix = {'LB':1024,'SB':102}
-# alignment_cell_size = {'LB':0.01,'SB':0.1}
+# alignment_npix = {'LB':1024,'SB':102} # exoALMA
+# alignment_cell_size = {'LB':0.01,'SB':0.1} # exoALMA
 alignment_plot_file_template = 'alignment_uv_grid.png' # this will become a suffix
-# alignment.align_measurement_sets(reference_ms       = reference_for_LB_alignment,
-#                                  align_ms           = offset_LB_EBs,
-#                                  npix               = alignment_npix['LB'],
-#                                  cell_size          = alignment_cell_size['LB'],
-#                                  spwid              = continuum_spw_id,
-#                                  plot_uv_grid       = True,
-#                                  plot_file_template = alignment_plot_file_template)
+alignment.align_measurement_sets(reference_ms       = reference_for_LB_alignment,
+                                 align_ms           = offset_LB_EBs,
+                                 npix               = alignment_npix['LB'],
+                                 cell_size          = alignment_cell_size['LB'],
+                                 spwid              = continuum_spw_id,
+                                 plot_uv_grid       = True,
+                                 plot_file_template = alignment_plot_file_template)
 
 
 # This is without per-EB self-cal:
@@ -91,11 +91,11 @@ alignment_plot_file_template = 'alignment_uv_grid.png' # this will become a suff
 #New coordinates for workflow/step1/ABAur_LB_EB6_initcont_selfcal.ms
 #requires a shift of [-0.0045512,-0.0276]
 
-# for EB in ddata.data_dict['LB_EBs']:
-#     initcont_selfcal          = ddata.data_dict[EB]['_initcont_selfcal.ms']
-#     initcont_selfcal_shift    = initcont_selfcal.replace('.ms', '_shift.ms')
-#     os.system('mv '+initcont_selfcal_shift+' ./workflow/step2')
-# os.system('mv ./workflow/step1/*'+alignment_plot_file_template+'  ./workflow/step2')
+for EB in ddata.data_dict['LB_EBs']:
+    initcont_selfcal          = ddata.data_dict[EB]['_initcont_selfcal.ms']
+    initcont_selfcal_shift    = initcont_selfcal.replace('.ms', '_shift.ms')
+    os.system('mv '+initcont_selfcal_shift+' ./workflow/step2')
+os.system('mv ./workflow/step1/*'+alignment_plot_file_template+'  ./workflow/step2')
 
 
 alignment_offsets   = {}
@@ -112,17 +112,17 @@ print('List of long baseline execution blocks that have been aligned: ', shifted
 
 """to check if alignment worked, calculate shift again and verify that shifts are small (i.e.
 a fraction of the cell size):"""
-# for i,shifted_ms in enumerate(shifted_LB_EBs):
-#     if i==0: #
-#         #for some reason the fitter fails when computing the offset of an EB to itself,
-#         #so we skip the ref EB
-#         continue
-#     offset = alignment.find_offset(reference_ms     = reference_for_LB_alignment,
-#                                    offset_ms        = shifted_ms,
-#                                    npix             = alignment_npix['LB'],
-#                                    cell_size        = alignment_cell_size['LB'],
-#                                    spwid            = continuum_spw_id)
-#     print(f'#offset for {shifted_ms}: ',offset)
+for i,shifted_ms in enumerate(shifted_LB_EBs):
+    if i==0: #
+        #for some reason the fitter fails when computing the offset of an EB to itself,
+        #so we skip the ref EB
+        continue
+    offset = alignment.find_offset(reference_ms     = reference_for_LB_alignment,
+                                   offset_ms        = shifted_ms,
+                                   npix             = alignment_npix['LB'],
+                                   cell_size        = alignment_cell_size['LB'],
+                                   spwid            = continuum_spw_id)
+    print(f'#offset for {shifted_ms}: ',offset)
 
 # This is without per-EB self-cal:
 #offset for /arc/projects/abaur/workflow/step2_noselfcal/ABAur_LB_EB1_initcont_shift.ms:  [-4.51798589e-10 -3.36817461e-09]
@@ -144,12 +144,18 @@ a fraction of the cell size):"""
 # print('Concatenating shifted LB EBs for aligning SB EBs...')
 path, _ = os.path.split(shifted_LB_EBs[0])
 LB_concat_shifted = path + '/ABAur_LB_concat_shifted.ms'
-# os.system(f'rm -rf {LB_concat_shifted}')
-# casatasks.concat(vis            = shifted_LB_EBs,
-#                  concatvis      = LB_concat_shifted,
-#                  dirtol         = '0.1arcsec',
-#                  copypointing   = False)
+os.system(f'rm -rf {LB_concat_shifted}')
+casatasks.concat(vis            = shifted_LB_EBs,
+                 concatvis      = LB_concat_shifted,
+                 dirtol         = '0.1arcsec',
+                 copypointing   = False)
 
+
+"""
+######################################################
+######## Align SB EBs to the LB concatenation ########
+######################################################
+"""
 
 """Align SB EBs to concat shifted LB EBs"""
 reference_for_SB_alignment = LB_concat_shifted
@@ -157,13 +163,13 @@ reference_for_SB_alignment = LB_concat_shifted
 offset_SB_EBs = [ddata.data_dict[EB]['_initcont_selfcal.ms'] for EB in ddata.data_dict['SB_EBs']]
 print('List of short baseline execution blocks to be aligned: ', offset_SB_EBs)
 
-# alignment.align_measurement_sets(reference_ms       = reference_for_SB_alignment,
-#                                  align_ms           = offset_SB_EBs,
-#                                  npix               = alignment_npix['SB'],
-#                                  cell_size          = alignment_cell_size['SB'],
-#                                  spwid              = continuum_spw_id,
-#                                  plot_uv_grid       = True,
-#                                  plot_file_template = alignment_plot_file_template)
+alignment.align_measurement_sets(reference_ms       = reference_for_SB_alignment,
+                                 align_ms           = offset_SB_EBs,
+                                 npix               = alignment_npix['SB'],
+                                 cell_size          = alignment_cell_size['SB'],
+                                 spwid              = continuum_spw_id,
+                                 plot_uv_grid       = True,
+                                 plot_file_template = alignment_plot_file_template)
 
 # This is without per-EB self-cal:
 #New coordinates for /arc/projects/abaur/workflow/step1/ABAur_SB_EB1_initcont.ms
@@ -184,11 +190,11 @@ print('List of short baseline execution blocks to be aligned: ', offset_SB_EBs)
 #New coordinates for workflow/step1/ABAur_SB_EB2_initcont_selfcal.ms
 #requires a shift of [0.11922,-0.19222]
 
-# for EB in ddata.data_dict['SB_EBs']:
-#     initcont_selfcal          = ddata.data_dict[EB]['_initcont_selfcal.ms']
-#     initcont_selfcal_shift    = initcont_selfcal.replace('.ms', '_shift.ms')
-#     os.system('mv '+initcont_selfcal_shift+' ./workflow/step2')
-# os.system('mv ./workflow/step1/*'+alignment_plot_file_template+'  ./workflow/step2')
+for EB in ddata.data_dict['SB_EBs']:
+    initcont_selfcal          = ddata.data_dict[EB]['_initcont_selfcal.ms']
+    initcont_selfcal_shift    = initcont_selfcal.replace('.ms', '_shift.ms')
+    os.system('mv '+initcont_selfcal_shift+' ./workflow/step2')
+os.system('mv ./workflow/step1/*'+alignment_plot_file_template+'  ./workflow/step2')
 
 
 #insert offsets from the alignment output
@@ -200,13 +206,13 @@ print('List of short baseline execution blocks that have been aligned: ', shifte
 
 """Again: to check if alignment worked, calculate shift again and verify that shifts are small (i.e.
 a fraction of the cell size):"""
-# for shifted_ms in shifted_SB_EBs:
-#     offset = alignment.find_offset(reference_ms     = reference_for_SB_alignment,
-#                                    offset_ms        = shifted_ms,
-#                                    npix             = alignment_npix['SB'],
-#                                    cell_size        = alignment_cell_size['SB'],
-#                                    spwid            = continuum_spw_id)
-#     print(f'#offset for {shifted_ms}: ',offset)
+for shifted_ms in shifted_SB_EBs:
+    offset = alignment.find_offset(reference_ms     = reference_for_SB_alignment,
+                                   offset_ms        = shifted_ms,
+                                   npix             = alignment_npix['SB'],
+                                   cell_size        = alignment_cell_size['SB'],
+                                   spwid            = continuum_spw_id)
+    print(f'#offset for {shifted_ms}: ',offset)
 
 # This is without per-EB self-cal:
 #offset for /arc/projects/abaur/workflow/step2_noselfcal/ABAur_SB_EB1_initcont_shift.ms:  [0.00044042 0.00118166]
@@ -216,7 +222,7 @@ a fraction of the cell size):"""
 #offset for workflow/step2/ABAur_SB_EB1_initcont_selfcal_shift.ms:  [0.00011743 0.00072109]
 #offset for workflow/step2/ABAur_SB_EB2_initcont_selfcal_shift.ms:  [-0.00033063 -0.00405134]
 
-# Jess: I guess this is here just out of interest
+# Jess: I guess this is here in the exoALMA script just out of interest
 # for shifted_ms in shifted_SB_EBs[1:]:
 #     offset = alignment.find_offset(reference_ms=shifted_SB_EBs[0],
 #                                    offset_ms=shifted_ms,npix=alignment_npix['SB'],
@@ -229,23 +235,23 @@ a fraction of the cell size):"""
 #offset for workflow/step2/ABAur_SB_EB2_initcont_selfcal_shift.ms to SB EB0:  [-0.01378587 -0.01481389]
 
 """Check that the phase center of each EB is: 04:55:45.854900 +30.33.03.73320 J2000"""
-# for EB in ddata.data_dict['EBs']:
-#     vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initcont_selfcal_shift.ms']
-#     casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
+for EB in ddata.data_dict['EBs']:
+    vis          = ddata.data_dict['NRAO_path']+ddata.data_dict[EB]['_initcont_selfcal_shift.ms']
+    casatasks.listobs(vis=vis, listfile=vis+'.listobs.txt')
 
 """Merge shifted SB EBs for continuing into step 3: self calibration"""
-# print('Concatenating shifted SB EBs...')
-# path, _ = os.path.split(shifted_SB_EBs[0])
-# SB_concat_shifted = path + '/ABAur_SB_concat_shifted_contp0.ms'
-# os.system(f'rm -rf {SB_concat_shifted}')
-# casatasks.concat(vis            = shifted_SB_EBs,
-#                  concatvis      = SB_concat_shifted,
-#                  dirtol         = '0.1arcsec',
-#                  copypointing   = False)
+print('Concatenating shifted SB EBs...')
+path, _ = os.path.split(shifted_SB_EBs[0])
+SB_concat_shifted = path + '/ABAur_SB_concat_shifted_contp0.ms'
+os.system(f'rm -rf {SB_concat_shifted}')
+casatasks.concat(vis            = shifted_SB_EBs,
+                 concatvis      = SB_concat_shifted,
+                 dirtol         = '0.1arcsec',
+                 copypointing   = False)
 
 """Move concatenated shifted LB and SB EBs to step 3 folder"""
-# os.system('mv '+SB_concat_shifted+' '+ddata.data_dict['NRAO_path']+'workflow/step3')
-# os.system('mv '+LB_concat_shifted+' '+ddata.data_dict['NRAO_path']+'workflow/step3')
+os.system('mv '+SB_concat_shifted+' '+ddata.data_dict['NRAO_path']+'workflow/step3')
+os.system('mv '+LB_concat_shifted+' '+ddata.data_dict['NRAO_path']+'workflow/step3')
 
 sys.exit()
 
